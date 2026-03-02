@@ -1,0 +1,787 @@
+# Week 8: Consolidation – Exam-Ready OOP Design
+
+## Learning Objectives
+- Review all four OOP pillars: encapsulation, inheritance, polymorphism, and abstraction
+- Apply class design best practices to larger systems
+- Read and interpret UML class diagrams as presented in AQA exams
+- Understand the SOLID principles at a high level
+- Recognise and answer common AQA OOP exam question patterns
+- Build a complete multi-class OOP system from a specification
+
+## 1. The Four OOP Pillars — Quick Review
+
+### Encapsulation
+Bundle data and behaviour; restrict direct access to internals.
+```python
+class BankAccount:
+    def __init__(self, owner, balance=0.0):
+        self.owner = owner
+        self.__balance = balance          # private
+
+    @property
+    def balance(self):                    # controlled read access
+        return self.__balance
+
+    def deposit(self, amount):            # controlled write via method
+        if amount > 0:
+            self.__balance += amount
+
+    def withdraw(self, amount):
+        if 0 < amount <= self.__balance:
+            self.__balance -= amount
+        else:
+            raise ValueError("Invalid withdrawal amount.")
+
+    def __str__(self):
+        return f"{self.owner}: £{self.__balance:.2f}"
+```
+
+### Inheritance
+Child classes acquire and extend parent class behaviour.
+```python
+from abc import ABC, abstractmethod
+
+class Account(ABC):
+    def __init__(self, owner, balance=0.0):
+        self.owner = owner
+        self.__balance = balance
+
+    @property
+    def balance(self):
+        return self.__balance
+
+    def _set_balance(self, value):
+        """Protected helper for subclasses to update balance."""
+        self.__balance = value
+
+    @abstractmethod
+    def account_type(self):
+        pass
+
+    def __str__(self):
+        return f"[{self.account_type()}] {self.owner}: £{self.balance:.2f}"
+
+
+class CurrentAccount(Account):
+    def __init__(self, owner, overdraft_limit=500.0):
+        super().__init__(owner)
+        self.overdraft_limit = overdraft_limit
+
+    def account_type(self):
+        return "Current"
+
+    def withdraw(self, amount):
+        if amount <= self.balance + self.overdraft_limit:
+            self._set_balance(self.balance - amount)
+        else:
+            raise ValueError("Exceeds overdraft limit.")
+
+
+class SavingsAccount(Account):
+    def __init__(self, owner, interest_rate=0.03):
+        super().__init__(owner)
+        self.interest_rate = interest_rate
+
+    def account_type(self):
+        return "Savings"
+
+    def apply_interest(self):
+        self._set_balance(self.balance * (1 + self.interest_rate))
+```
+
+### Polymorphism
+Same method call, different behaviour depending on object type.
+```python
+def display_accounts(accounts):
+    """Works with ANY Account subclass — no isinstance checks needed."""
+    for acc in accounts:
+        print(acc)          # calls the appropriate __str__
+        print(acc.account_type())  # calls the correct override
+
+accounts = [CurrentAccount("Alice", 1000), SavingsAccount("Bob", 0.05)]
+display_accounts(accounts)
+```
+
+### Abstraction
+Hide complexity; expose only the essential interface.
+```python
+# End users of Account only need to know the public interface:
+# .balance, .deposit(), .withdraw(), .account_type(), str()
+# They do NOT need to know how balance is stored or calculated internally.
+```
+
+## 2. Class Design Best Practices
+
+### Single Responsibility
+Each class should have **one reason to change**. A class that handles both business logic and file I/O is doing too much.
+
+```python
+# BAD: one class does too much
+class StudentReport:
+    def __init__(self, student):
+        self.student = student
+
+    def calculate_average(self):
+        return sum(self.student.grades) / len(self.student.grades)
+
+    def save_to_file(self, filename):          # ← different responsibility!
+        with open(filename, "w") as f:
+            f.write(f"{self.student.name}: {self.calculate_average()}")
+
+
+# BETTER: separate responsibilities
+class GradeCalculator:
+    @staticmethod
+    def average(grades):
+        return sum(grades) / len(grades) if grades else 0.0
+
+
+class ReportWriter:
+    @staticmethod
+    def save(filename, content):
+        with open(filename, "w") as f:
+            f.write(content)
+```
+
+### Favour Composition Over Inheritance
+```python
+# Use composition when the relationship is "has-a", not "is-a"
+class Engine:
+    def __init__(self, horsepower):
+        self.horsepower = horsepower
+
+    def start(self):
+        return f"Engine ({self.horsepower}hp) started."
+
+
+class Car:
+    def __init__(self, make, model, horsepower):
+        self.make = make
+        self.model = model
+        self.__engine = Engine(horsepower)   # HAS-A engine
+
+    def start(self):
+        return self.__engine.start()
+
+    def __str__(self):
+        return f"{self.make} {self.model}"
+```
+
+## 3. Reading UML Class Diagrams for AQA
+
+### AQA Exam Diagram Format
+AQA often presents class diagrams like this. You need to be able to:
+1. Identify class names, attributes (with types), and method signatures
+2. Spot inheritance arrows and understand the hierarchy
+3. Identify associations/aggregations and their multiplicities
+
+```
+AQA-style class diagram (written as ASCII):
+
+┌─────────────────────────┐
+│ <<abstract>>            │
+│ Animal                  │
+├─────────────────────────┤
+│ - name : str            │
+│ - age : int             │
+├─────────────────────────┤
+│ + __init__(name, age)   │
+│ + speak() : str  <<abs>>│
+│ + eat() : str           │
+│ + __str__() : str       │
+└────────────┬────────────┘
+             △   (inheritance — open triangle pointing to parent)
+    ┌────────┴────────┐
+    │                 │
+┌───┴──────┐   ┌──────┴─────┐
+│  Dog     │   │   Cat      │
+├──────────┤   ├────────────┤
+│- breed   │   │- indoor    │
+├──────────┤   ├────────────┤
+│+ speak() │   │+ speak()   │
+│+ fetch() │   │+ purr()    │
+└──────────┘   └────────────┘
+
+Relationships:
+  △ or ▷  = inheritance (open arrowhead points to parent)
+  ◇       = aggregation (open diamond on the "whole" side)
+  ◆       = composition (filled diamond)
+  ——      = association
+
+Visibility:
+  + public
+  - private
+  # protected
+```
+
+### Translating a Diagram to Python
+```python
+# From the UML above:
+from abc import ABC, abstractmethod
+
+class Animal(ABC):
+    def __init__(self, name: str, age: int):
+        self._name = name    # protected
+        self._age = age
+
+    @abstractmethod
+    def speak(self) -> str:
+        pass
+
+    def eat(self) -> str:
+        return f"{self._name} is eating."
+
+    def __str__(self) -> str:
+        return f"{self.__class__.__name__}(name={self._name!r}, age={self._age})"
+
+
+class Dog(Animal):
+    def __init__(self, name: str, age: int, breed: str):
+        super().__init__(name, age)
+        self.__breed = breed
+
+    def speak(self) -> str:
+        return f"{self._name} says: Woof!"
+
+    def fetch(self) -> str:
+        return f"{self._name} fetches the ball!"
+
+
+class Cat(Animal):
+    def __init__(self, name: str, age: int, indoor: bool):
+        super().__init__(name, age)
+        self.__indoor = indoor
+
+    def speak(self) -> str:
+        return f"{self._name} says: Meow!"
+
+    def purr(self) -> str:
+        return f"{self._name} purrs contentedly."
+```
+
+## 4. SOLID Principles — Brief Overview
+
+The **SOLID** principles are guidelines for writing maintainable OOP code. You will not be tested on them by name in AQA, but they underpin good design.
+
+| Letter | Principle | One-line summary |
+|---|---|---|
+| **S** | Single Responsibility | A class should have only one reason to change |
+| **O** | Open/Closed | Open for extension, closed for modification |
+| **L** | Liskov Substitution | Subclasses must be usable wherever the parent is used |
+| **I** | Interface Segregation | Prefer small, specific interfaces over large general ones |
+| **D** | Dependency Inversion | Depend on abstractions, not concrete implementations |
+
+```python
+# Open/Closed Principle in practice:
+# Instead of modifying existing code when adding new behaviour,
+# extend it by creating new subclasses.
+
+class Discount(ABC):
+    @abstractmethod
+    def apply(self, price):
+        pass
+
+class PercentageDiscount(Discount):
+    def __init__(self, percent):
+        self.percent = percent
+    def apply(self, price):
+        return price * (1 - self.percent / 100)
+
+class FixedDiscount(Discount):
+    def __init__(self, amount):
+        self.amount = amount
+    def apply(self, price):
+        return max(0, price - self.amount)
+
+# To add a new discount type, add a new subclass — no existing code changes.
+```
+
+## 5. Common AQA Exam Question Patterns
+
+### Pattern 1 — "Define a class"
+> *"Write a Python class `Circle` with a private attribute `__radius`. Include a constructor, a `area()` method, and a `__str__` method."*
+
+```python
+import math
+
+class Circle:
+    def __init__(self, radius):
+        self.__radius = radius   # private
+
+    @property
+    def radius(self):
+        return self.__radius
+
+    def area(self):
+        return math.pi * self.__radius ** 2
+
+    def __str__(self):
+        return f"Circle(radius={self.__radius})"
+```
+
+### Pattern 2 — "Extend a class"
+> *"The class `Shape` is defined above. Write a subclass `Rectangle` that inherits from `Shape` and overrides the `area()` method."*
+
+```python
+class Rectangle(Shape):
+    def __init__(self, width, height, colour="black"):
+        super().__init__(colour)   # always call super().__init__()
+        self.width = width
+        self.height = height
+
+    def area(self):                # override the parent method
+        return self.width * self.height
+```
+
+### Pattern 3 — "Trace the output"
+> *"What is the output of the following code?"*
+
+```python
+class Vehicle:
+    count = 0
+    def __init__(self, make):
+        self.make = make
+        Vehicle.count += 1
+
+    def __str__(self):
+        return f"Vehicle: {self.make}"
+
+class Car(Vehicle):
+    def __init__(self, make, doors):
+        super().__init__(make)
+        self.doors = doors
+
+    def __str__(self):
+        return f"Car: {self.make}, {self.doors} doors"
+
+v = Vehicle("Generic")
+c = Car("Ford", 4)
+print(v)             # Vehicle: Generic
+print(c)             # Car: Ford, 4 doors
+print(Vehicle.count) # 2  ← both Vehicle() and Car() incremented it
+print(isinstance(c, Vehicle))  # True
+```
+
+### Pattern 4 — "Explain encapsulation"
+> *"Explain why the `__balance` attribute is declared as private in the BankAccount class."*
+
+**Model answer**: The attribute is declared private (using double underscore name mangling) so that it cannot be accessed or modified directly from outside the class. This prevents the balance being set to an invalid value (e.g. negative). Instead, all changes go through the `deposit()` and `withdraw()` methods, which contain validation logic. This protects the integrity of the object's data.
+
+## 6. Worked Example: A Full OOP System
+
+### Design: `OnlineShop`
+```python
+from abc import ABC, abstractmethod
+
+
+# ── Product hierarchy ────────────────────────────────────────────────────
+
+class Product(ABC):
+    """Abstract base for all products."""
+
+    def __init__(self, product_id, name, price, stock):
+        self.__product_id = product_id
+        self.__name = name
+        self.__price = price
+        self.__stock = stock
+
+    @property
+    def product_id(self):
+        return self.__product_id
+
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def price(self):
+        return self.__price
+
+    @price.setter
+    def price(self, value):
+        if value < 0:
+            raise ValueError("Price cannot be negative.")
+        self.__price = value
+
+    @property
+    def stock(self):
+        return self.__stock
+
+    def reduce_stock(self, quantity):
+        if quantity > self.__stock:
+            raise ValueError(f"Only {self.__stock} units available.")
+        self.__stock -= quantity
+
+    @abstractmethod
+    def category(self):
+        pass
+
+    def __str__(self):
+        return f"[{self.category()}] {self.name} — £{self.price:.2f} (stock: {self.stock})"
+
+
+class PhysicalProduct(Product):
+    def __init__(self, product_id, name, price, stock, weight_kg):
+        super().__init__(product_id, name, price, stock)
+        self.weight_kg = weight_kg
+
+    def category(self):
+        return "Physical"
+
+    def shipping_cost(self):
+        return round(self.weight_kg * 1.50, 2)
+
+
+class DigitalProduct(Product):
+    def __init__(self, product_id, name, price, stock, file_size_mb):
+        super().__init__(product_id, name, price, stock)
+        self.file_size_mb = file_size_mb
+
+    def category(self):
+        return "Digital"
+
+    def shipping_cost(self):
+        return 0.0   # no shipping for digital products
+
+
+# ── Order system (composition) ───────────────────────────────────────────
+
+class OrderLine:
+    """Composed by Order — does not exist independently."""
+
+    def __init__(self, product, quantity):
+        self.product = product
+        self.quantity = quantity
+
+    def line_total(self):
+        return self.product.price * self.quantity
+
+    def __str__(self):
+        return f"  {self.product.name} x{self.quantity} = £{self.line_total():.2f}"
+
+
+class Order:
+    _next_id = 1
+
+    def __init__(self, customer):
+        self.order_id = Order._next_id
+        Order._next_id += 1
+        self.customer = customer
+        self.__lines = []
+        self.__status = "pending"
+        self.__discount = None
+
+    def add_product(self, product, quantity):
+        product.reduce_stock(quantity)   # validates stock
+        self.__lines.append(OrderLine(product, quantity))
+
+    def apply_discount(self, percent):
+        if not 0 < percent <= 100:
+            raise ValueError("Discount must be between 0 and 100.")
+        self.__discount = percent
+
+    def subtotal(self):
+        return sum(line.line_total() for line in self.__lines)
+
+    def total(self):
+        sub = self.subtotal()
+        if self.__discount:
+            sub *= (1 - self.__discount / 100)
+        return round(sub, 2)
+
+    def advance_status(self):
+        transitions = {"pending": "processing", "processing": "shipped",
+                       "shipped": "delivered"}
+        if self.__status not in transitions:
+            raise ValueError(f"Order is already {self.__status}.")
+        self.__status = transitions[self.__status]
+
+    @property
+    def status(self):
+        return self.__status
+
+    def receipt(self):
+        lines = [f"Order #{self.order_id} | Customer: {self.customer.name} | Status: {self.__status}"]
+        lines += [str(line) for line in self.__lines]
+        if self.__discount:
+            lines.append(f"  Discount: {self.__discount}%")
+        lines.append(f"  TOTAL: £{self.total():.2f}")
+        return "\n".join(lines)
+
+
+# ── Customer (aggregation with Order) ────────────────────────────────────
+
+class Customer:
+    def __init__(self, customer_id, name, email):
+        self.customer_id = customer_id
+        self.name = name
+        self.__email = email
+        self.__orders = []
+
+    @property
+    def email(self):
+        return self.__email
+
+    def place_order(self):
+        order = Order(self)
+        self.__orders.append(order)
+        return order
+
+    def order_history(self):
+        return self.__orders[:]
+
+    def total_spent(self):
+        return sum(o.total() for o in self.__orders)
+
+    def __str__(self):
+        return f"Customer({self.customer_id}): {self.name} — {len(self.__orders)} orders"
+
+
+# ── Demo ─────────────────────────────────────────────────────────────────
+
+laptop = PhysicalProduct("P001", "Laptop", 899.99, 10, 2.1)
+ebook = DigitalProduct("D001", "Python Guide", 14.99, 999, 45)
+
+alice = Customer("C001", "Alice", "alice@example.com")
+order = alice.place_order()
+order.add_product(laptop, 1)
+order.add_product(ebook, 2)
+order.apply_discount(10)
+print(order.receipt())
+order.advance_status()
+print(f"Status: {order.status}")
+print(alice)
+print(f"Total spent: £{alice.total_spent():.2f}")
+```
+
+## Practice Exercises
+
+### Exercise 1: Zoo System from a Class Diagram
+Implement the following class hierarchy:
+
+```
+<<abstract>>
+Animal
+  - name: str
+  - age: int
+  + sound(): str  <<abstract>>
+  + feed(food): str
+      ▲
+      |
+  ┌───┴──────────────┐
+  │                  │
+Mammal           Bird
+- fur_colour        - wingspan
++ warm_blooded()    + fly(): str
+      ▲                 ▲
+      |                 |
+  ┌───┴───┐         ┌───┴───┐
+Lion    Elephant  Parrot   Penguin
+```
+
+Add a `Zoo` class that aggregates animals and supports `add_animal`, `feeding_time()` (calls `feed` for each), `all_sounds()`, and `find_by_name(name)`.
+
+```python
+# Your code here
+from abc import ABC, abstractmethod
+
+class Animal(ABC):
+    pass
+
+class Mammal(Animal):
+    pass
+
+class Bird(Animal):
+    pass
+
+class Lion(Mammal):
+    pass
+
+class Elephant(Mammal):
+    pass
+
+class Parrot(Bird):
+    pass
+
+class Penguin(Bird):
+    pass
+
+class Zoo:
+    pass
+```
+
+### Exercise 2: Cinema Booking System
+Design and implement a `Cinema` booking system:
+- `Film` — title, duration, rating (U/PG/12/15/18), available_seats
+- `Screening` — composes a Film, has date, time, screen_number; manage seat bookings
+- `Booking` — created by Screening; has customer_name, seats_booked, booking_ref
+- `Cinema` — aggregates Screenings; `add_screening`, `find_screenings(title)`, `book_seats(screening_id, name, seats)`
+- Encapsulate all private data; validate seats > 0 and not exceeding available
+
+```python
+# Your code here
+class Film:
+    pass
+
+class Screening:
+    pass
+
+class Booking:
+    pass
+
+class Cinema:
+    pass
+```
+
+### Exercise 3: Bank System with Accounts and Transactions
+Build a `Bank` system:
+- Abstract `Account` class — owner, balance (private), `deposit`, `withdraw`, abstract `account_type`
+- `CurrentAccount(Account)` — overdraft limit; `withdraw` allows going negative to the limit
+- `SavingsAccount(Account)` — interest rate; `apply_interest()` method
+- `Transaction` — composed by Account; stores amount, type ("deposit"/"withdrawal"), timestamp
+- `Bank` — aggregates Accounts; `open_account`, `find_account(id)`, `total_deposits()`, `generate_report()`
+
+```python
+# Your code here
+from abc import ABC, abstractmethod
+from datetime import datetime
+
+class Transaction:
+    pass
+
+class Account(ABC):
+    pass
+
+class CurrentAccount(Account):
+    pass
+
+class SavingsAccount(Account):
+    pass
+
+class Bank:
+    pass
+```
+
+### Exercise 4: Game with Player/Enemy/Boss Hierarchy
+Create a simple text-based game hierarchy:
+- Abstract `Character` — name, health, attack_power; abstract `attack(target)`, `take_damage(amount)`
+- `Player(Character)` — adds `level`, `experience`; `gain_xp(amount)` levels up at 100 XP; override `attack`
+- `Enemy(Character)` — adds `reward_xp`; override `attack`
+- `Boss(Enemy)` — adds `phase` (1 or 2); at < 50% health switches to phase 2 doubling attack power
+- `Game` — manages a Player and a list of Enemies; `run_battle(player, enemy)` simulates combat turn by turn
+
+```python
+# Your code here
+from abc import ABC, abstractmethod
+
+class Character(ABC):
+    pass
+
+class Player(Character):
+    pass
+
+class Enemy(Character):
+    pass
+
+class Boss(Enemy):
+    pass
+
+class Game:
+    pass
+```
+
+### Exercise 5: Library Management System
+Design a full `Library Management System`:
+- `Book` — isbn, title, author, year, genre, available
+- `Member` — member_id, name, email, max_loans (default 3), list of current loans
+- `Loan` — composed by Member; book reference, loan_date, due_date (14 days), return_date
+- `Librarian` — name, staff_id; methods `issue_book(member, book)`, `return_book(member, book)`, `renew_loan(member, book)`
+- `Library` — aggregates Books, Members, and Librarians; `search_books(query)`, `overdue_loans()`, `member_report(member_id)`, `catalogue()`
+
+```python
+# Your code here
+from datetime import date, timedelta
+
+class Book:
+    pass
+
+class Loan:
+    pass
+
+class Member:
+    pass
+
+class Librarian:
+    pass
+
+class Library:
+    pass
+```
+
+## Key Concepts to Remember
+- **Encapsulation**: use `__private` attributes with `@property`/setters; validate in setters; bundle data with behaviour
+- **Inheritance**: use `class Child(Parent):`; call `super().__init__(...)` in the child constructor; override methods when the child needs different behaviour
+- **Polymorphism**: write code that calls methods by name on objects; Python dispatches to the correct version at runtime; duck typing means any object with the right methods works
+- **Abstraction**: use `ABC` and `@abstractmethod` to define contracts; concrete subclasses must implement all abstract methods; cannot instantiate abstract classes directly
+- **Composition over inheritance**: when the relationship is "has-a", compose objects rather than inherit; the whole creates its parts
+- **UML notation for AQA**: `+` public, `-` private, `#` protected; open triangle for inheritance; open/filled diamond for aggregation/composition; multiplicity labels (1, *, 1..*)
+- **`super()`**: always call in child constructors to ensure parent initialisation runs
+- **`isinstance` / `issubclass`**: use to safely check types at runtime without breaking polymorphism
+
+## Common Mistakes to Avoid
+1. **Forgetting `super().__init__()` in child class constructors** — without it, the parent's `__init__` never runs and its attributes are not set up.
+2. **Accessing `__private` attributes from a subclass** — double-underscore name mangling means `self.__balance` in `Account` becomes `_Account__balance`; a subclass cannot access it as `self.__balance`.
+3. **Returning `None` from operator overloads** — `__add__`, `__str__`, `__lt__` etc. must always `return` a value.
+4. **Instantiating abstract classes** — forgetting `@abstractmethod` on one method means the class is not truly abstract; always verify by trying to instantiate it.
+5. **Not validating in setters / `__init__`** — the object should always be in a valid state; if validation logic exists in the setter, route `__init__` assignments through the setter (`self.price = price`) not directly to the private attribute.
+6. **Using `isinstance` instead of polymorphism** — long `if isinstance(obj, A): ... elif isinstance(obj, B): ...` chains should usually be replaced by polymorphic method calls.
+7. **Mutable default arguments in `__init__`** — `def __init__(self, items=[])` shares the list across all instances; use `def __init__(self, items=None): self.items = items if items is not None else []`.
+
+## Extension Challenge
+Design and implement a **Hospital Management System** from scratch using all OOP concepts covered in this course. The system must include:
+
+**Classes:**
+- Abstract `Person` — name, dob, contact details; abstract `role()` property
+- `Patient(Person)` — patient_id, NHS number, medical history (list of `Diagnosis` objects — composition), current admissions
+- `Doctor(Person)` — GMC number, specialisation, ward; methods `diagnose(patient, condition)`, `prescribe(patient, medication)`
+- `Nurse(Person)` — NMC number, ward; method `administer(patient, medication)`
+- `Diagnosis` — condition, date, doctor; composed by Patient
+- `Prescription` — medication, dosage, prescribed_by, date; composed by Patient
+- `Ward` — ward_name, capacity; aggregates Patients and has Doctor/Nurse staff
+- `Hospital` — composes Wards; aggregates Doctors and Nurses; methods `admit_patient`, `discharge_patient`, `find_patient(id)`, `available_beds()`, `staff_report()`
+
+**Requirements:**
+- Full encapsulation with `@property` and setters where appropriate
+- Correct use of composition (Ward composes Beds, Patient owns Diagnoses/Prescriptions) and aggregation (Hospital aggregates staff)
+- Polymorphism: `role()` property returns `"Patient"`, `"Doctor"`, or `"Nurse"` for the correct subclass
+- All data validated: negative ages rejected, capacity never exceeded, etc.
+
+```python
+# Your code here
+from abc import ABC, abstractmethod
+from datetime import date
+
+class Person(ABC):
+    pass
+
+class Patient(Person):
+    pass
+
+class Doctor(Person):
+    pass
+
+class Nurse(Person):
+    pass
+
+class Diagnosis:
+    pass
+
+class Prescription:
+    pass
+
+class Ward:
+    pass
+
+class Hospital:
+    pass
+```
