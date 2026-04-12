@@ -4,7 +4,7 @@
 - Review all four OOP pillars: encapsulation, inheritance, polymorphism, and abstraction
 - Apply class design best practices to larger systems
 - Read and interpret UML class diagrams as presented in AQA exams
-- Understand the SOLID principles at a high level
+- Understand the SOLID principles at a high level *(extension — not examinable by name)*
 - Recognise and answer common AQA OOP exam question patterns
 - Build a complete multi-class OOP system from a specification
 
@@ -259,9 +259,11 @@ class Cat(Animal):
         return f"{self._name} purrs contentedly."
 ```
 
-## 4. SOLID Principles — Brief Overview
+## 4. SOLID Principles — Brief Overview (Extension)
 
-The **SOLID** principles are guidelines for writing maintainable OOP code. You will not be tested on them by name in AQA, but they underpin good design.
+> **Extension — Beyond Core AQA:** The SOLID principles are **not named or tested in the AQA specification**. You will not be asked to name, define, or apply them in an AQA exam. They are included here as enrichment because they underpin good professional OOP design and complement the concepts you have studied. Read this section to broaden your understanding; do not prioritise it over the examinable content in Sections 1–3 and 5.
+
+The **SOLID** principles are guidelines for writing maintainable OOP code.
 
 | Letter | Principle | One-line summary |
 |---|---|---|

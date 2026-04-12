@@ -3,10 +3,11 @@
 ## Learning Objectives
 - Understand what polymorphism means and the two main types
 - Implement run-time polymorphism through method overriding
-- Use duck typing to write flexible, polymorphic code
 - Overload operators using Python's dunder (magic) methods
 - Implement comparison operators to make objects sortable and comparable
 - Implement `__len__`, `__contains__`, and other sequence-style dunder methods
+- *(Enrichment)* Understand duck typing as Python's informal approach to polymorphism
+- *(Extension)* Use `@total_ordering` to auto-generate comparison methods
 
 ## 1. What is Polymorphism?
 
@@ -132,6 +133,8 @@ print(f"Total area: {total_area(shapes):.2f}")  # Total area: 108.54
 
 ## 3. Duck Typing
 
+> **Enrichment — Beyond Core AQA:** The concept below is the mechanism Python uses to achieve polymorphism without a strict inheritance hierarchy. AQA examiners expect you to understand polymorphism through method overriding (Section 2). The term **duck typing** and its use without inheritance are useful background knowledge that deepen your understanding, but will not be tested as a named concept in the exam.
+
 ### "If It Walks Like a Duck..."
 Duck typing is Python's approach to polymorphism: Python does not care about the *type* of an object — only whether the object has the method or attribute you need. If it has `.speak()`, you can call `.speak()` on it.
 
@@ -254,6 +257,9 @@ print(v1.dot(v2))       # 2*1 + 3*(-1) = -1
 ```
 
 ### Comparison Operators — Playing Cards
+
+> **Extension:** The `@total_ordering` decorator is a useful Python standard-library shortcut, but it is **not required by the AQA specification**. You are expected to know that you can implement comparison operators via dunder methods; `@total_ordering` is a Python-specific convenience on top of that.
+
 ```python
 from functools import total_ordering
 
@@ -445,10 +451,10 @@ class NumberList:
 ## Key Concepts to Remember
 - **Polymorphism**: the ability for the same method call to produce different behaviour depending on the object's type
 - **Method overriding**: a subclass replaces a parent method with its own version; Python calls the most derived version at runtime
-- **Duck typing**: Python cares whether an object *has* the needed method, not what its type is — "if it walks like a duck…"
+- **Duck typing**: Python's informal polymorphism — an object is usable wherever its methods match what is expected, regardless of its actual type; "if it walks like a duck…" (enrichment; not a named AQA term)
 - **Operator overloading**: implementing dunder methods (`__add__`, `__eq__`, etc.) lets your objects work with built-in Python operators
 - **Dunder methods**: special methods surrounded by double underscores (e.g. `__str__`, `__len__`) that Python calls in specific circumstances
-- **`@total_ordering`**: a `functools` decorator that auto-generates missing comparison methods from `__eq__` and one of `__lt__`/`__le__`/`__gt__`/`__ge__`
+- **`@total_ordering`**: a `functools` decorator (extension) that auto-generates missing comparison methods from `__eq__` and one of `__lt__`/`__le__`/`__gt__`/`__ge__`
 - **`__len__`**: called by `len()`; must return a non-negative integer
 - **`__contains__`**: called by the `in` operator; should return a bool
 

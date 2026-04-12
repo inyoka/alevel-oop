@@ -6,8 +6,9 @@
 - Use `super()` to call the parent class constructor and methods
 - Override parent methods in a subclass
 - Use `isinstance()` and `issubclass()` to inspect type hierarchies
-- Understand multilevel inheritance and the Method Resolution Order (MRO)
+- Understand multilevel inheritance and the Method Resolution Order (MRO) for single-inheritance chains
 - Know when inheritance is the right design choice
+- *(Extension)* Understand multiple inheritance and how the MRO resolves method lookups across multiple parent classes
 
 ## 1. What is Inheritance?
 
@@ -290,7 +291,10 @@ print(d.bark())        # Rex barks.      ← from Dog
 ```
 
 ### Method Resolution Order (MRO)
-When Python looks up a method, it follows the **MRO** — a specific order in which classes are searched. Use `ClassName.__mro__` or `help(ClassName)` to inspect it.
+
+> **AQA core:** Python searches the child class first, then its parent(s) in order, then grandparents. For single-inheritance chains (the common case in AQA questions) this is simply "look in the child, then the parent, then the grandparent". The example above with `LivingThing → Animal → Mammal → Dog` illustrates this.
+
+> **Extension — Multiple Inheritance and the C3 Algorithm:** The material below covers *multiple inheritance* (a class inheriting from two or more parents simultaneously). Multiple inheritance is **not required by the AQA specification** and will not appear in exams as an implementation task, but understanding the MRO in this context is useful enrichment for students who want to explore Python more deeply.
 
 ```python
 class A:
@@ -316,7 +320,7 @@ print(D.__mro__)
 #  <class '__main__.A'>, <class 'object'>)
 ```
 
-> **AQA Tip**: for the exam, understand that Python searches the child class first, then left-to-right through parents, then grandparents (C3 linearisation). You are not expected to know the algorithm name — just the concept.
+> Python uses the **C3 linearisation** algorithm to build the MRO for multiple-inheritance hierarchies. You are not expected to know the algorithm name for the AQA exam.
 
 ## 6. When to Use Inheritance
 
@@ -434,7 +438,7 @@ def classify_vehicle(v):
 - **Child/Derived/Subclass**: the class that inherits; defined with `class Child(Parent):`
 - **`super()`**: refers to the parent class; used to call the parent's `__init__` or other methods
 - **Method overriding**: a child class defines a method with the same name as the parent's, replacing its behaviour
-- **MRO (Method Resolution Order)**: the order Python searches the class hierarchy when looking up a method; inspectable via `ClassName.__mro__`
+- **MRO (Method Resolution Order)**: the order Python searches the class hierarchy when looking up a method; for single-inheritance chains, this is simply child → parent → grandparent; inspectable via `ClassName.__mro__`
 - **`isinstance(obj, Class)`**: returns `True` if `obj` is an instance of `Class` or any of its subclasses
 - **`issubclass(Child, Parent)`**: returns `True` if `Child` is derived from `Parent`
 - **"is-a" relationship**: the correct test for whether inheritance is appropriate

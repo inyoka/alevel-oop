@@ -8,6 +8,7 @@
 - Write concrete subclasses that implement all abstract methods
 - Understand Python's "interface by convention" approach
 - Explain the benefits of abstract classes for AQA exam questions
+- *(Extension)* Understand `__subclasshook__` and virtual subclasses
 
 ## 1. What is Abstraction?
 
@@ -334,6 +335,9 @@ class GraphicShape(Drawable, Serialisable):
 ```
 
 ### `__subclasshook__` — Virtual Subclasses
+
+> **Extension — Beyond Core AQA:** Virtual subclasses and `__subclasshook__` are advanced Python ABC features. They are **not required by the AQA specification** and will not appear in exams. This section is included for students who want to understand how Python's ABC machinery works under the hood.
+
 Python's ABCs support *virtual subclasses*: classes that are considered subclasses of an ABC without explicitly inheriting from it.
 
 ```python
@@ -554,7 +558,7 @@ class Canvas:
 - **`@abstractmethod`**: a decorator marking a method that subclasses *must* implement; the class becomes abstract if it contains any
 - **Concrete class**: a class that implements all abstract methods and *can* be instantiated
 - **Interface (by convention)**: an abstract class with only abstract methods, no instance data — serves as a pure specification
-- **`__subclasshook__`**: a class method on an ABC that enables virtual subclass registration based on duck typing
+- **`__subclasshook__`**: (extension) a class method on an ABC that enables virtual subclass registration based on duck typing; not required for AQA
 - **Why abstract classes matter for AQA**: they enforce consistent interfaces across an inheritance hierarchy, making polymorphism reliable and safe
 
 ## Common Mistakes to Avoid
