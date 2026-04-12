@@ -15,7 +15,7 @@ This guide covers all OOP content required for AQA A-Level Computer Science, ali
 | 3 | [Inheritance](/week3-inheritance.md) | base & derived classes, `super()`, method overriding, MRO, `isinstance` |
 | 4 | [Polymorphism](/week4-polymorphism.md) | virtual methods, dynamic dispatch, method overriding, operator overloading |
 | 5 | [Abstract Classes](/week5-abstract-classes.md) | abstraction, `@abstractmethod`, static methods (`@staticmethod`), abstract methods |
-| 6 | [Object Relationships](/week6-associations.md) | aggregation, composition, "has-a" vs "is-a", UML class diagrams |
+| 6 | [Object Relationships](/week6-object-relationships.md) | aggregation, composition, "has-a" vs "is-a", UML class diagrams |
 | 7 | [OOP Data Structures](/week7-oop-data-structures.md) | linked list, stack, queue, `Node` class |
 | 8 | [Consolidation](/week8-consolidation.md) | four OOP pillars, OOP design principles, UML, AQA exam patterns |
 
@@ -78,7 +78,7 @@ Enforcing a common interface
 - Python's interface-by-convention approach
 - Using abstract classes to enforce contracts
 
-#### [Week 6: Object Relationships](/week6-associations.md)
+#### [Week 6: Object Relationships](/week6-object-relationships.md)
 
 Modelling relationships between classes
 
