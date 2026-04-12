@@ -8,7 +8,7 @@
 - Recognise and draw UML class diagram notation, including the open diamond (◇) for aggregation and the filled diamond (◆) for composition
 - Apply the "has-a" test to distinguish these relationships from "is-a" (inheritance)
 - Know when to prefer composition over inheritance
-- Understand association as a general modelling concept that covers all object-to-object links
+- Understand association as a general modelling concept that covers all object-to-object links *(supporting vocabulary; not an AQA headline term)*
 
 ## Key Terminology
 
@@ -47,7 +47,7 @@ A fundamental modelling question is whether two classes share a **"has-a"** or *
 
 If you find yourself writing "is-a" but it feels forced (e.g. just to reuse methods), switch to "has-a" (composition). This is the principle of **favouring composition over inheritance**.
 
-## 2. Association
+## 2. Association *(supporting vocabulary — not an AQA headline term)*
 
 ### Objects That Reference Each Other
 An **association** describes any situation where Object A holds a reference to Object B, but neither creates nor destroys the other. They exist completely independently. This is the most general and loosest form of object relationship.

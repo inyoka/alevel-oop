@@ -432,7 +432,7 @@ A `Game` class has a `calculate_score()` method. The scoring system is likely to
 **What it means:**  
 When you want to reuse or extend behaviour, prefer *containing* an object (composition/aggregation — "has-a") over *inheriting* from a class ("is-a"). Composition gives you flexibility because you can swap the contained object at runtime; inheritance creates a permanent, rigid coupling.
 
-**Link to Week 6 (Associations — Aggregation and Composition):**  
+**Link to Week 6 (Object Relationships — Aggregation and Composition):**  
 Week 6 showed you the difference between aggregation and composition. This principle says: when you feel tempted to inherit just to reuse code, ask *"is this genuinely an is-a relationship?"* If not, use composition instead.
 
 **Example — inheritance gone wrong vs composition done right:**
