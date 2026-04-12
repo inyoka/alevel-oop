@@ -525,6 +525,7 @@ Static methods can appear in abstract base classes. Subclasses inherit them and 
 
 ```python
 from abc import ABC, abstractmethod
+import math
 
 class Shape(ABC):
     @abstractmethod
@@ -548,11 +549,9 @@ class Circle(Shape):
         self.radius = radius
 
     def area(self):
-        import math
         return math.pi * self.radius ** 2
 
     def perimeter(self):
-        import math
         return 2 * math.pi * self.radius
 
 
