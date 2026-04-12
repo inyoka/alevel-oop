@@ -10,6 +10,18 @@
 - Know when inheritance is the right design choice
 - *(Extension)* Understand multiple inheritance and how the MRO resolves method lookups across multiple parent classes
 
+## Key Terminology
+
+- **Inheritance**: a mechanism by which a child class automatically acquires the attributes and methods of a parent class.
+- **Parent / Base / Superclass**: the class being inherited from.
+- **Child / Derived / Subclass**: the class that inherits; defined with `class Child(Parent):`.
+- **`super()`**: a built-in function that refers to the parent class, used to call the parent's `__init__` or other methods.
+- **Method overriding**: a subclass defines a method with the same name as one in the parent class, replacing the parent's behaviour.
+- **MRO (Method Resolution Order)**: the sequence in which Python searches the class hierarchy when looking up a method. Inspectable via `ClassName.__mro__`.
+- **`isinstance(obj, Class)`**: returns `True` if `obj` is an instance of `Class` or any of its subclasses.
+- **`issubclass(Child, Parent)`**: returns `True` if `Child` is derived from `Parent`.
+- **"is-a" relationship**: the correct test for whether inheritance is appropriate (e.g. a Dog *is an* Animal).
+
 ## 1. What is Inheritance?
 
 ### The Core Idea
@@ -222,9 +234,9 @@ for person in [emp, mgr, rep]:
 # Carol: bonus = £4,250.00
 ```
 
-> **AQA exam language**: Questions may ask you to *"explain what is meant by overriding a method"* or *"write a subclass that overrides the `calculate_bonus()` method."* The correct definition is: **overriding** means a subclass provides its own implementation of a method with the same name as one in the parent class; when the method is called on an object of the subclass, Python runs the subclass version instead of the parent version.
+> **Exam focus:** AQA questions may ask you to *"explain what is meant by overriding a method"* or *"write a subclass that overrides the `calculate_bonus()` method."* The correct definition is: **overriding** means a subclass provides its own implementation of a method with the same name as one in the parent class; when the method is called on an object of the subclass, Python runs the subclass version instead of the parent version.
 
-> **AQA Note**: The AQA specification also calls an overrideable parent method a *virtual method* — see Week 4 for a full explanation of the term, including a Python example.
+> **Teacher note:** The AQA specification also calls an overrideable parent method a *virtual method* — see Week 4 for a full explanation of the term, including a Python example.
 
 ## 4. `isinstance()` and `issubclass()`
 
@@ -296,7 +308,7 @@ print(d.bark())        # Rex barks.      ← from Dog
 
 ### Method Resolution Order (MRO)
 
-> **AQA core:** Python searches the child class first, then its parent(s) in order, then grandparents. For single-inheritance chains (the common case in AQA questions) this is simply "look in the child, then the parent, then the grandparent". The example above with `LivingThing → Animal → Mammal → Dog` illustrates this.
+> **Teacher note (AQA core):** Python searches the child class first, then its parent(s) in order, then grandparents. For single-inheritance chains (the common case in AQA questions) this is simply "look in the child, then the parent, then the grandparent". The example above with `LivingThing → Animal → Mammal → Dog` illustrates this.
 
 > **Extension — Multiple Inheritance and the C3 Algorithm:** The material below covers *multiple inheritance* (a class inheriting from two or more parents simultaneously). Multiple inheritance is **not required by the AQA specification** and will not appear in exams as an implementation task, but understanding the MRO in this context is useful enrichment for students who want to explore Python more deeply.
 
@@ -324,7 +336,7 @@ print(D.__mro__)
 #  <class '__main__.A'>, <class 'object'>)
 ```
 
-> Python uses the **C3 linearisation** algorithm to build the MRO for multiple-inheritance hierarchies. You are not expected to know the algorithm name for the AQA exam.
+> **Teacher note:** Python uses the **C3 linearisation** algorithm to build the MRO for multiple-inheritance hierarchies. You are not expected to know the algorithm name for the AQA exam.
 
 ## 6. When to Use Inheritance
 
@@ -353,7 +365,7 @@ class Car:
         return self.engine.start()
 ```
 
-## Practice Exercises
+## Practice Tasks
 
 ### Exercise 1: Animal → Dog/Cat Hierarchy
 Create a base class `Animal` with attributes `name`, `age`, and `sound`, and methods `speak()`, `eat()`, and `__str__`. Create subclasses `Dog` and `Cat`. `Dog` should add a `fetch(item)` method and override `speak()` to include enthusiasm (e.g. "Woof!! Woof!!"). `Cat` should add a `purr()` method and override `speak()` appropriately.
@@ -447,6 +459,8 @@ def classify_vehicle(v):
 - **`issubclass(Child, Parent)`**: returns `True` if `Child` is derived from `Parent`
 - **"is-a" relationship**: the correct test for whether inheritance is appropriate
 
+> **Exam focus:** Common AQA questions: *"Write a subclass `Manager` that inherits from `Employee` and adds a `team_size` attribute."* Always call `super().__init__(...)` inside the child's `__init__`, override the relevant methods, and demonstrate that inherited methods still work. AQA may also ask you to *"explain the advantage of using inheritance"* — key answers: **code reuse** (shared behaviour is written once), **maintainability** (changes to the parent propagate to all children), and **polymorphism** (different subclasses can be used interchangeably).
+
 ## Common Mistakes to Avoid
 1. **Calling `super()` incorrectly** — always use `super().__init__(...)` inside the child's `__init__`; do not call `ParentClass.__init__(self, ...)` directly (it works but is less Pythonic and breaks with multiple inheritance).
 2. **Overriding without calling `super()` when needed** — if the parent method does important setup, forgetting `super().method()` means that setup is lost.
@@ -454,7 +468,7 @@ def classify_vehicle(v):
 4. **Using inheritance for "has-a" relationships** — a `Car` having an `Engine` should use composition, not inheritance; only use inheritance for genuine "is-a" relationships.
 5. **Assuming `isinstance` only matches exact types** — `isinstance(dog_object, Animal)` returns `True` even though `dog_object` was created as a `Dog`; this is intentional and useful.
 
-## Extension Challenge
+## Extension
 Build a full `SchoolMember` system. `SchoolMember` is the base class with `name`, `age`, and `school_id`. Subclasses:
 - `Teacher(SchoolMember)` — adds `subject`, `salary`; method `teach()` returns what they teach; override `__str__`
 - `Student(SchoolMember)` — adds `year_group` and `grades` (dict of subject → grade); methods `add_grade(subject, grade)`, `average_grade()`, `report()`; override `__str__`

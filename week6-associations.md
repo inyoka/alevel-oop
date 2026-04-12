@@ -10,6 +10,17 @@
 - Know when to prefer composition over inheritance
 - Understand association as a general modelling concept that covers all object-to-object links
 
+## Key Terminology
+
+- **Aggregation**: a "has-a" (weak) relationship where the whole contains parts that **can exist independently** of the whole. If the whole is destroyed, the parts survive.
+- **Composition**: a "has-a" (strong) relationship where the whole **creates** the parts; the parts **cannot exist without the whole**. If the whole is destroyed, the parts are destroyed too.
+- **Association**: a general "uses-a" or "knows-about" relationship between objects; neither creates nor destroys the other. Useful modelling vocabulary; not a separate AQA headline term.
+- **Lifecycle dependency**: the key distinction between aggregation and composition — in composition, the part's existence is tied to the whole's existence; in aggregation, the part can exist before and after the whole.
+- **"Has-a" relationship**: indicates that one class contains or uses another as a component — implemented via aggregation or composition.
+- **UML (Unified Modelling Language)**: a standard notation for drawing class diagrams. Key symbols: ◇ open diamond = aggregation; ◆ filled diamond = composition; triangle arrow = inheritance.
+- **Multiplicity**: UML notation indicating how many objects participate in a relationship (e.g. `1`, `*`, `1..*`, `0..1`).
+- **Composition over inheritance**: the design principle of preferring "has-a" relationships over "is-a" relationships when there is no genuine type hierarchy.
+
 ## 1. Object Relationships: The Big Picture
 
 ### Overview
@@ -117,7 +128,7 @@ print(cs101.roster())   # ['Bob'] — course is unaffected
 ### "Has-A" with Independent Parts
 **Aggregation** is a "has-a" relationship where one object (the *whole*) contains other objects (the *parts*), but the **parts can exist independently of the whole**. If the whole is destroyed, the parts live on.
 
-**Exam tip:** The key feature of aggregation is **independent lifecycle** — the part existed before the whole, can be removed from it, and continues to exist afterwards. In Python this typically means the part is **created outside** and then **passed into** the containing object.
+> **Exam focus:** The key feature of aggregation is **independent lifecycle** — the part existed before the whole, can be removed from it, and continues to exist afterwards. In Python this typically means the part is **created outside** and then **passed into** the containing object.
 
 ```
 UML (ASCII):
@@ -209,7 +220,7 @@ print(b1)   # "1984" by George Orwell [on loan] — still alive!
 ### "Has-A" with Dependent Parts
 **Composition** is the strongest "has-a" relationship. The *whole* **creates** the *parts*, and the parts **cannot meaningfully exist** without the whole. If the whole is destroyed, the parts are destroyed too.
 
-**Exam tip:** The key feature of composition is **dependent lifecycle** — the part is created *inside* the whole and has no independent existence. In Python this typically means the whole's `__init__` (or another method) calls the part's constructor directly.
+> **Exam focus:** The key feature of composition is **dependent lifecycle** — the part is created *inside* the whole and has no independent existence. In Python this typically means the whole's `__init__` (or another method) calls the part's constructor directly.
 
 ```
 UML (ASCII):
@@ -419,7 +430,7 @@ EXAMPLE DIAGRAM:
   (association — student and course exist independently; neither owns the other)
 ```
 
-## Practice Exercises
+## Practice Tasks
 
 ### Exercise 1: Library and Book (Aggregation)
 Extend the `Library`/`Book` example above. Add:
@@ -534,6 +545,8 @@ class Order:
 - **UML multiplicity**: `1`, `*`, `1..*`, `0..1` notation indicates how many objects participate in a relationship
 - **Favour composition over inheritance**: prefer "has-a" when there is no genuine "is-a" relationship, as it leads to more flexible, loosely coupled designs
 
+> **Exam focus:** AQA questions on this topic commonly include: *"The diagram shows a Library class and a Book class connected by an open diamond. State what type of relationship this represents and explain what this means for the lifecycle of a Book object."* Answer: **aggregation** — an open diamond represents aggregation, which means the Book objects can exist independently of the Library; if the Library is destroyed, the Book objects still exist. For composition (filled diamond): the parts are created by and cannot outlive the whole.
+
 ## Common Mistakes to Avoid
 1. **Confusing aggregation with composition** — the key question is: *can the part exist without the whole?* If yes → aggregation (◇). If no → composition (◆).
 2. **Getting the diamond symbol wrong in UML** — remember: open/white diamond (◇) = aggregation (parts survive); filled/black diamond (◆) = composition (parts do not survive). The diamond always goes on the *whole* side.
@@ -541,7 +554,7 @@ class Order:
 4. **Not modelling dependent lifecycles correctly in composition** — in composition, parts should be created *inside* the whole's methods, not passed in from outside.
 5. **Forgetting to clean up associations** — when an object is removed from a bidirectional link, update both sides; e.g. when a student drops a course, remove the student from the course's list too.
 
-## Extension Challenge
+## Extension
 Design a **school management system** that uses all three relationship types:
 - **Composition**: `School` composes `Department` objects (departments don't exist without the school); each `Department` composes `Classroom` objects
 - **Aggregation**: `Department` aggregates `Teacher` objects (teachers can move between departments); `Course` aggregates `Textbook` objects

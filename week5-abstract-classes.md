@@ -12,6 +12,18 @@
 - Explain the benefits of abstract classes for AQA exam questions
 - *(Extension)* Understand `__subclasshook__` and virtual subclasses
 
+## Key Terminology
+
+- **Abstraction**: hiding implementation details and exposing only what is essential — defining *what* something does without specifying *how*.
+- **Abstract class**: a class that cannot be instantiated directly; it defines a contract (set of methods) that all concrete subclasses must fulfil.
+- **Abstract method**: a method declared in an abstract class with no body; subclasses *must* provide an implementation.
+- **`ABC`**: the base class from Python's `abc` module. Your abstract class inherits from `ABC` to gain abstract-class behaviour.
+- **`@abstractmethod`**: decorator that marks a method as abstract. A class with at least one abstract method cannot be instantiated.
+- **Concrete class**: a class that implements every abstract method and therefore *can* be instantiated.
+- **Interface (by convention)**: an abstract class containing only abstract methods and no instance data — a pure specification of what subclasses must provide.
+- **Static method (`@staticmethod`)**: a method that belongs to the class but receives neither `self` nor `cls`; used for utility functions that do not depend on object or class state.
+- **Class method (`@classmethod`)**: a method that receives the class (`cls`) as its first argument instead of the instance; commonly used for alternative constructors.
+
 ## 1. What is Abstraction?
 
 ### The Core Idea
@@ -338,7 +350,7 @@ class GraphicShape(Drawable, Serialisable):
 
 ### `__subclasshook__` — Virtual Subclasses
 
-> **Extension — Beyond Core AQA:** Virtual subclasses and `__subclasshook__` are advanced Python ABC features. They are **not required by the AQA specification** and will not appear in exams. This section is included for students who want to understand how Python's ABC machinery works under the hood.
+> **Teacher note:** The section on `__subclasshook__` and virtual subclasses is **Extension — Beyond Core AQA.** Virtual subclasses and `__subclasshook__` are advanced Python ABC features. They are **not required by the AQA specification** and will not appear in exams. This section is included for students who want to understand how Python's ABC machinery works under the hood.
 
 Python's ABCs support *virtual subclasses*: classes that are considered subclasses of an ABC without explicitly inheriting from it.
 
@@ -372,7 +384,7 @@ print(isinstance(Robot(), Speakable))  # True — duck typing meets ABCs
 ### `@staticmethod` — Behaviour That Belongs to the Class, Not an Instance
 A **static method** is a method defined inside a class that does **not** receive the instance (`self`) or the class (`cls`) as its first argument. It is a plain function that belongs to the class's namespace because it is logically related to the class.
 
-> **AQA note**: AQA questions may ask you to explain the difference between instance methods, class methods, and static methods, or to write a class that includes a static method.
+> **Exam focus:** AQA questions may ask you to *"explain what is meant by the difference between instance methods, class methods, and static methods"* or *"write a class that includes a static method."*
 
 ```python
 class MathUtils:
@@ -687,9 +699,9 @@ c = Circle(7)
 print(f"Area: {c.area():.2f}")  # Area: 153.94
 ```
 
-> **AQA exam tip:** In an AQA exam you may be asked to identify or write a static method. Remember: a static method uses the `@staticmethod` decorator, takes no `self` or `cls` parameter, and is called on the class (e.g. `ClassName.method_name()`). It is suitable for utility calculations that do not depend on any particular object's data.
+> **Exam focus:** In an AQA exam you may be asked to identify or write a static method. Remember: a static method uses the `@staticmethod` decorator, takes no `self` or `cls` parameter, and is called on the class (e.g. `ClassName.method_name()`). It is suitable for utility calculations that do not depend on any particular object's data.
 
-## Practice Exercises
+## Practice Tasks
 
 ### Exercise 1: Abstract `Shape` with Concrete Subclasses
 Define an abstract `Shape` class (using `ABC`) with abstract methods `area()` and `perimeter()`, plus a concrete method `is_larger_than(other)` that compares areas. Implement `Circle`, `Rectangle`, `Parallelogram`, and `RightAngledTriangle` as concrete subclasses. Demonstrate that attempting to instantiate `Shape` directly raises a `TypeError`.
@@ -801,6 +813,8 @@ class Canvas:
 - **Static method (`@staticmethod`)**: a method that belongs to the class but receives neither `self` nor `cls`; used for utility functions that do not depend on instance or class state; called as `ClassName.method()` — AQA students must be able to recognise and write static methods
 - **Why abstract classes matter for AQA**: they enforce consistent interfaces across an inheritance hierarchy, making polymorphism reliable and safe
 
+> **Exam focus:** AQA questions on abstract classes commonly include: *"Explain why the `Shape` class is defined as abstract"* — because it represents a concept that is too general to instantiate directly; `area()` and `perimeter()` cannot be calculated without knowing the specific shape. *"Explain what happens if a subclass does not implement all abstract methods"* — Python raises a `TypeError` when you try to instantiate it. *"Write an abstract class with two abstract methods and one concrete method."*
+
 ## Common Mistakes to Avoid
 1. **Forgetting to import `ABC` and `abstractmethod`** — without `from abc import ABC, abstractmethod`, using `@abstractmethod` does nothing; the class is not actually abstract.
 2. **Inheriting from `ABC` but forgetting `@abstractmethod`** — a class that inherits `ABC` without any `@abstractmethod` methods is just a regular class; it can be instantiated normally.
@@ -808,7 +822,7 @@ class Canvas:
 4. **Confusing abstract and concrete** — calling methods on the abstract class itself (rather than on instances of a concrete subclass) will raise a `TypeError`.
 5. **Putting too much logic in abstract methods** — abstract methods typically have a `pass` body; occasionally you give them a default body (callable via `super()`), but this is advanced and should be used sparingly.
 
-## Extension Challenge
+## Extension
 Build a plugin system using abstract base classes. Define an abstract `Plugin(ABC)` class with abstract methods `name()` (property), `version()` (property), `execute(data)`, and `validate(data)`. Add a concrete `PluginManager` class that:
 - Maintains a registry of plugins by name
 - `register(plugin)` — validates the plugin is a `Plugin` instance and adds it

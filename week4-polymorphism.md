@@ -10,6 +10,18 @@
 - *(Enrichment)* Understand duck typing as Python's informal approach to polymorphism
 - *(Extension)* Use `@total_ordering` to auto-generate comparison methods
 
+## Key Terminology
+
+- **Polymorphism**: the ability for the same method call to produce different behaviour depending on the actual type of the object at runtime.
+- **Virtual method**: a method defined in a parent class that is intended to be overridden by subclasses. In Python, all instance methods are effectively virtual by default.
+- **Dynamic dispatch / late binding**: the mechanism by which Python automatically selects the correct overriding method at runtime based on the actual type of the object.
+- **Method overriding**: a subclass replaces a parent method with its own implementation.
+- **Duck typing**: Python's informal approach to polymorphism — if an object has the required method, it can be used regardless of its actual type. (*Enrichment; not a named AQA term.*)
+- **Operator overloading**: implementing dunder methods (`__add__`, `__eq__`, etc.) to make objects work with built-in Python operators.
+- **Dunder / magic methods**: special methods surrounded by double underscores (e.g. `__str__`, `__len__`) that Python calls in specific circumstances.
+- **`__len__`**: called by `len()`; must return a non-negative integer.
+- **`__contains__`**: called by the `in` operator; should return a boolean.
+
 ## 1. What is Polymorphism?
 
 ### The Core Idea
@@ -47,14 +59,14 @@ for animal in animals:
 | Compile-time | Method overloading, static dispatch | Not directly (Python resolves at runtime) |
 | Run-time | Method overriding, dynamic dispatch | ✅ Core to Python's design |
 
-> **AQA Note**: Python is dynamically typed, so polymorphism is almost always run-time. The concept of "compile-time polymorphism" (different methods with the same name but different signatures) exists in Java/C++ but not natively in Python — instead Python uses default arguments and `*args`.
+> **Teacher note:** Python is dynamically typed, so polymorphism is almost always run-time. The concept of "compile-time polymorphism" (different methods with the same name but different signatures) exists in Java/C++ but not natively in Python — instead Python uses default arguments and `*args`.
 
 ## 2. Run-Time Polymorphism: Method Overriding
 
 ### Virtual Methods — AQA Terminology
 In OOP theory (and in AQA exam questions), an overridable method is called a **virtual method**. When you call a virtual method through a reference to the base class, Python automatically calls the most-derived version — this is called **dynamic dispatch** or **late binding**.
 
-> **AQA exam language**: Questions may ask you to *"explain what is meant by a virtual method"* or *"describe how virtual methods support polymorphism."* The correct answer is: a virtual method is a method defined in a parent class that can be overridden in a subclass; when it is called at run-time, Python dispatches to the overriding version in the most-derived class.
+> **Exam focus:** AQA questions may ask you to *"explain what is meant by a virtual method"* or *"describe how virtual methods support polymorphism."* The correct answer is: a virtual method is a method defined in a parent class that can be overridden in a subclass; when it is called at run-time, Python dispatches to the overriding version in the most-derived class.
 
 In Python, **all instance methods are virtual by default** — every method can be overridden in a subclass. (In C++ or Java you must explicitly mark a method `virtual` or `override`; in Python no extra keyword is needed.) This is why Python code naturally supports run-time polymorphism through plain method overriding.
 
@@ -161,11 +173,11 @@ def total_area(shapes):
 print(f"Total area: {total_area(shapes):.2f}")  # Total area: 108.54
 ```
 
-> **Note:** In the `Shape` example above, `area()` and `perimeter()` are **virtual methods** — they are defined in `Shape` with placeholder return values and are intended to be overridden by every concrete subclass. Calling `shape.area()` on any item in the list automatically runs the correct subclass version (dynamic dispatch). This is exactly what examiners mean when they ask you to *"identify the virtual methods in a class"* or *"explain how polymorphism is achieved through virtual methods"*.
+> **Exam focus:** In the `Shape` example above, `area()` and `perimeter()` are **virtual methods** — they are defined in `Shape` with placeholder return values and are intended to be overridden by every concrete subclass. Calling `shape.area()` on any item in the list automatically runs the correct subclass version (dynamic dispatch). This is exactly what examiners mean when they ask you to *"identify the virtual methods in a class"* or *"explain how polymorphism is achieved through virtual methods"*.
 
 ## 3. Duck Typing
 
-> **Enrichment — Beyond Core AQA:** The concept below is the mechanism Python uses to achieve polymorphism without a strict inheritance hierarchy. AQA examiners expect you to understand polymorphism through method overriding (Section 2). The term **duck typing** and its use without inheritance are useful background knowledge that deepen your understanding, but will not be tested as a named concept in the exam.
+> **Teacher note (enrichment — beyond core AQA):** The concept below is the mechanism Python uses to achieve polymorphism without a strict inheritance hierarchy. AQA examiners expect you to understand polymorphism through method overriding (Section 2). The term **duck typing** and its use without inheritance are useful background knowledge that deepen your understanding, but will not be tested as a named concept in the exam.
 
 ### "If It Walks Like a Duck..."
 Duck typing is Python's approach to polymorphism: Python does not care about the *type* of an object — only whether the object has the method or attribute you need. If it has `.speak()`, you can call `.speak()` on it.
@@ -386,7 +398,7 @@ for item in b:
     print(item)          # apple / banana / cherry
 ```
 
-## Practice Exercises
+## Practice Tasks
 
 ### Exercise 1: Shape Hierarchy with Polymorphic `area()`
 Create a `Shape` base class and at least four subclasses: `Circle`, `Rectangle`, `Triangle`, and `Square`. Each subclass must override `area()` and `perimeter()`. Write a function `largest_shape(shapes)` that returns the shape with the greatest area, and `total_perimeter(shapes)` that sums all perimeters. Demonstrate that the functions work without any `if isinstance(...)` checks.
@@ -491,6 +503,8 @@ class NumberList:
 - **`__len__`**: called by `len()`; must return a non-negative integer
 - **`__contains__`**: called by the `in` operator; should return a bool
 
+> **Exam focus:** Common AQA questions: *"Explain what is meant by polymorphism"* — answer: the same method name produces different behaviour depending on the type of the object it is called on. *"Identify the virtual methods in the class diagram above"* — answer: any method in a parent class that is overridden in subclasses. *"Write a class that uses operator overloading to allow two objects to be added using the `+` operator"* — implement `__add__` returning a new object of the same type.
+
 ## Common Mistakes to Avoid
 1. **Forgetting to `return` from `__add__`** — operator overloads that build new objects must `return` that new object; forgetting `return` gives you `None`.
 2. **Mutating `self` in `__add__`** — arithmetic operators should return a *new* object, not modify the existing one; `v1 + v2` should not change `v1`.
@@ -498,7 +512,7 @@ class NumberList:
 4. **Missing `__rmul__` when needed** — `3 * vector` calls `int.__mul__(vector)` first, which returns `NotImplemented`, then tries `vector.__rmul__(3)`; without `__rmul__`, `3 * v` fails.
 5. **Implementing comparison operators inconsistently** — if `a == b` is `True`, then `a < b` should be `False`; use `@total_ordering` or be very careful with the logic.
 
-## Extension Challenge
+## Extension
 Create a `Matrix` class representing an m×n matrix of numbers. Implement:
 - `__init__(self, rows)` where `rows` is a list of lists
 - `__add__` and `__sub__` (matrices must be the same shape)

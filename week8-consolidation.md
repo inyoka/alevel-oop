@@ -10,6 +10,21 @@
 - Recognise and answer common AQA OOP exam question patterns
 - Build a complete multi-class OOP system from a specification
 
+## Key Terminology
+
+This consolidation week uses terms from all previous weeks. The key terms most likely to appear in AQA exam questions are listed here for quick reference.
+
+- **Encapsulation**: bundling data and methods inside a class while restricting direct external access to internal data.
+- **Inheritance**: a subclass acquiring attributes and methods from a parent class via `class Child(Parent):`.
+- **Polymorphism**: the ability for the same method call to behave differently depending on the actual type of the object at runtime.
+- **Abstraction**: hiding implementation details; exposing only the essential interface via abstract classes and methods.
+- **Composition**: a "has-a" (strong) relationship — the whole creates its parts; the parts cannot exist without the whole.
+- **Aggregation**: a "has-a" (weak) relationship — the whole contains references to parts that can exist independently.
+- **Virtual method**: a method defined in a parent class that is intended to be overridden by subclasses; Python's dynamic dispatch calls the most derived version at runtime.
+- **Abstract class**: a class that cannot be instantiated directly; defines a contract that concrete subclasses must fulfil.
+- **UML**: Unified Modelling Language — a standard notation for class diagrams. Key symbols: open triangle = inheritance; ◇ = aggregation; ◆ = composition.
+- **SOLID**: a set of five design principles for maintainable OOP (extension — not required by AQA specification).
+
 ## 1. The Four OOP Pillars — Quick Review
 
 ### Encapsulation
@@ -325,7 +340,7 @@ class Cat(Animal):
 
 ## 4. SOLID Principles — Brief Overview (Extension)
 
-> **Extension — Beyond Core AQA:** The SOLID principles are **not named or tested in the AQA specification**. You will not be asked to name, define, or apply them in an AQA exam. They are included here as enrichment because they underpin good professional OOP design and complement the concepts you have studied. Read this section to broaden your understanding; do not prioritise it over the examinable content in Sections 1–3 and 5.
+> **Teacher note (extension — beyond core AQA):** The SOLID principles are **not named or tested in the AQA specification**. You will not be asked to name, define, or apply them in an AQA exam. They are included here as enrichment because they underpin good professional OOP design and complement the concepts you have studied. Read this section to broaden your understanding; do not prioritise it over the examinable content in Sections 1–3 and 5.
 
 The **SOLID** principles are guidelines for writing maintainable OOP code.
 
@@ -804,7 +819,7 @@ print(alice)
 print(f"Total spent: £{alice.total_spent():.2f}")
 ```
 
-## Practice Exercises
+## Practice Tasks
 
 ### Exercise 1: Zoo System from a Class Diagram
 Implement the following class hierarchy:
@@ -968,7 +983,7 @@ class Library:
     pass
 ```
 
-## Exam Wording — Quick Reference
+## Exam Focus — Quick Reference
 
 Use these definitions word-for-word (or close to them) in AQA exam answers.
 
@@ -999,6 +1014,8 @@ Use these definitions word-for-word (or close to them) in AQA exam answers.
 - **`super()`**: always call in child constructors to ensure parent initialisation runs
 - **`isinstance` / `issubclass`**: use to safely check types at runtime without breaking polymorphism
 
+> **Exam focus:** AQA consolidation questions often combine multiple OOP concepts in a single scenario. When answering: (1) identify what relationship type applies (is-a → inheritance; has-a with independent lifecycle → aggregation; has-a with dependent lifecycle → composition); (2) use precise terminology (encapsulation, polymorphism, virtual method, abstract class, etc.); (3) in code questions, always include `__init__`, private attributes with appropriate accessors, and `__str__`. Refer to the "Exam Focus — Quick Reference" table above for exam-ready definitions.
+
 ## Common Mistakes to Avoid
 1. **Forgetting `super().__init__()` in child class constructors** — without it, the parent's `__init__` never runs and its attributes are not set up.
 2. **Accessing `__private` attributes from a subclass** — double-underscore name mangling means `self.__balance` in `Account` becomes `_Account__balance`; a subclass cannot access it as `self.__balance`.
@@ -1008,7 +1025,7 @@ Use these definitions word-for-word (or close to them) in AQA exam answers.
 6. **Using `isinstance` instead of polymorphism** — long `if isinstance(obj, A): ... elif isinstance(obj, B): ...` chains should usually be replaced by polymorphic method calls.
 7. **Mutable default arguments in `__init__`** — `def __init__(self, items=[])` shares the list across all instances; use `def __init__(self, items=None): self.items = items if items is not None else []`.
 
-## Extension Challenge
+## Extension
 Design and implement a **Hospital Management System** from scratch using all OOP concepts covered in this course. The system must include:
 
 **Classes:**
