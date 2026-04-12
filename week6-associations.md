@@ -1,40 +1,53 @@
-# Week 6: Object Associations – Aggregation and Composition
+# Week 6: Object Relationships – Aggregation and Composition
+
+> **Teacher note:** For AQA A-Level Computer Science, **aggregation** and **composition** are the priority relationship types students must know and be able to use in exam answers. **Association** is included in this lesson as useful supporting vocabulary for modelling and UML, but it is not an AQA headline term. Ensure students can confidently distinguish aggregation from composition before moving on.
 
 ## Learning Objectives
-- Understand the three types of object relationships: association, aggregation, and composition
-- Implement each relationship type in Python
-- Read and write UML class diagram notation (in ASCII form)
-- Apply the "has-a" test to distinguish relationships from "is-a" (inheritance)
-- Know when to choose composition over inheritance
-- Model dependent and independent object lifecycles
+- Understand and implement the two core "has-a" relationships: **aggregation** and **composition** *(AQA examinable)*
+- Distinguish between aggregation and composition using lifecycle dependency
+- Recognise and draw UML class diagram notation, including the open diamond (◇) for aggregation and the filled diamond (◆) for composition
+- Apply the "has-a" test to distinguish these relationships from "is-a" (inheritance)
+- Know when to prefer composition over inheritance
+- Understand association as a general modelling concept that covers all object-to-object links
 
-## 1. The Three Object Relationships
+## 1. Object Relationships: The Big Picture
 
 ### Overview
-When designing OOP systems you need to decide *how objects relate to each other*. There are three key types:
+When designing OOP systems you need to decide *how objects relate to each other*. The two **AQA-examinable** relationship types are **aggregation** and **composition** — both are "has-a" relationships that differ in how tightly the objects are bound together. **Association** is a broader term used in object modelling to describe any link between objects; it is useful vocabulary but is not tested separately in the AQA specification.
 
-| Relationship | Keyword | Lifecycle | UML symbol |
-|---|---|---|---|
-| **Association** | "uses a" / "knows about" | Independent | `—` (plain line) |
-| **Aggregation** | "has a" (weak) | Independent | `◇—` (open diamond) |
-| **Composition** | "has a" (strong) | Dependent | `◆—` (filled diamond) |
+| Relationship | AQA priority | Keyword | Lifecycle | UML symbol |
+|---|---|---|---|---|
+| **Aggregation** | ✅ Core | "has a" (weak) | Independent | `◇—` (open/white diamond) |
+| **Composition** | ✅ Core | "has a" (strong) | Dependent | `◆—` (filled/black diamond) |
+| Association | Supporting vocab | "uses a" / "knows about" | Independent | `—` (plain line) |
 
 ```
-Simple memory aid:
-  ASSOCIATION  — objects know about each other but exist independently
-  AGGREGATION  — one object contains others, but the parts can exist alone
-  COMPOSITION  — one object owns others; the parts CANNOT exist without the whole
+Quick memory aid:
+  AGGREGATION  — one object CONTAINS others; the parts can exist independently of the whole
+  COMPOSITION  — one object OWNS and CREATES its parts; the parts CANNOT exist without the whole
+  ASSOCIATION  — objects simply reference each other; neither is responsible for the other
 ```
+
+### "Has-A" vs "Is-A"
+A fundamental modelling question is whether two classes share a **"has-a"** or **"is-a"** relationship:
+
+- **"Is-a"** → use **inheritance**. A `Dog` *is an* `Animal`. `Dog` inherits from `Animal`.
+- **"Has-a"** → use **aggregation or composition**. A `Car` *has a* `Engine`. `Car` contains an `Engine` object.
+
+If you find yourself writing "is-a" but it feels forced (e.g. just to reuse methods), switch to "has-a" (composition). This is the principle of **favouring composition over inheritance**.
 
 ## 2. Association
 
-### Objects That Know About Each Other
-An **association** is the loosest relationship. Object A holds a reference to Object B, but neither creates nor destroys the other. They exist independently.
+### Objects That Reference Each Other
+An **association** describes any situation where Object A holds a reference to Object B, but neither creates nor destroys the other. They exist completely independently. This is the most general and loosest form of object relationship.
+
+Association is useful vocabulary when drawing class diagrams or describing designs, but for AQA exam answers you should focus on whether the relationship is **aggregation** or **composition**.
 
 ```
-UML (ASCII):
+UML (ASCII):  plain line — no diamond
   Student ————————— Course
   "A student is enrolled on a course"
+  (neither object creates or destroys the other)
 ```
 
 ```python
@@ -99,17 +112,19 @@ del alice               # Student object is gone
 print(cs101.roster())   # ['Bob'] — course is unaffected
 ```
 
-## 3. Aggregation
+## 3. Aggregation *(AQA Core)*
 
 ### "Has-A" with Independent Parts
-**Aggregation** is a stronger relationship where one object (the *whole*) contains other objects (the *parts*), but the parts can exist independently of the whole. If the whole is destroyed, the parts live on.
+**Aggregation** is a "has-a" relationship where one object (the *whole*) contains other objects (the *parts*), but the **parts can exist independently of the whole**. If the whole is destroyed, the parts live on.
+
+**Exam tip:** The key feature of aggregation is **independent lifecycle** — the part existed before the whole, can be removed from it, and continues to exist afterwards. In Python this typically means the part is **created outside** and then **passed into** the containing object.
 
 ```
 UML (ASCII):
   Library  ◇————  Book
   "A library has books; books can exist without the library"
 
-  ◇ = open diamond on the 'whole' side
+  ◇ = open (white) diamond — always placed on the 'whole' side
 ```
 
 ```python
@@ -189,17 +204,19 @@ del lib
 print(b1)   # "1984" by George Orwell [on loan] — still alive!
 ```
 
-## 4. Composition
+## 4. Composition *(AQA Core)*
 
 ### "Has-A" with Dependent Parts
 **Composition** is the strongest "has-a" relationship. The *whole* **creates** the *parts*, and the parts **cannot meaningfully exist** without the whole. If the whole is destroyed, the parts are destroyed too.
+
+**Exam tip:** The key feature of composition is **dependent lifecycle** — the part is created *inside* the whole and has no independent existence. In Python this typically means the whole's `__init__` (or another method) calls the part's constructor directly.
 
 ```
 UML (ASCII):
   House  ◆————  Room
   "A house is composed of rooms; rooms don't exist without a house"
 
-  ◆ = filled diamond on the 'whole' side
+  ◆ = filled (black) diamond — always placed on the 'whole' side
 ```
 
 ```python
@@ -359,7 +376,7 @@ print(o.receipt())
 ## 5. UML Class Diagram Notation
 
 ### Reading and Writing UML for AQA
-AQA exams may require you to read class diagrams. Here is the key notation in ASCII form:
+AQA exams may ask you to read or complete class diagrams. Key notation is shown below in ASCII form. **Pay particular attention to the diamond symbols** — these are the most commonly tested UML elements for this topic.
 
 ```
 CLASS BOX:
@@ -373,13 +390,13 @@ CLASS BOX:
 │ - helper(): void     │
 └──────────────────────┘
 
-RELATIONSHIPS:
-  Association:   A ────────── B     (plain line, with optional label/multiplicity)
-  Aggregation:   A ◇────────── B    (open diamond on whole side)
-  Composition:   A ◆────────── B    (filled diamond on whole side)
-  Inheritance:   A ────────▷ B     (open arrow on parent side)
+RELATIONSHIPS (AQA focus — know these diamonds):
+  Aggregation:   A ◇────────── B    (open/white diamond on whole side — parts are independent)
+  Composition:   A ◆────────── B    (filled/black diamond on whole side — parts are dependent)
+  Association:   A ────────── B     (plain line — general reference, no ownership)
+  Inheritance:   A ────────▷ B     (open arrow on parent side — "is-a")
 
-MULTIPLICITY:
+MULTIPLICITY (how many objects take part):
   1    exactly one
   *    zero or more
   1..* one or more
@@ -389,14 +406,17 @@ EXAMPLE DIAGRAM:
               1              *
   Library  ◇────────────  Book
                  has
+  (aggregation — books exist independently of the library)
 
               1              *
   Order    ◆────────────  OrderItem
               contains
+  (composition — order items only exist as part of an order)
 
               1              *
   Student  ─────────────  Course
               enrolled on
+  (association — student and course exist independently; neither owns the other)
 ```
 
 ## Practice Exercises
@@ -506,20 +526,20 @@ class Order:
 ```
 
 ## Key Concepts to Remember
-- **Association**: a "uses-a" or "knows-about" relationship; objects are independent; neither creates the other
-- **Aggregation**: a "has-a" (weak) relationship; the whole contains parts that can exist independently; open diamond (◇) in UML
-- **Composition**: a "has-a" (strong) relationship; the whole creates the parts; parts cannot exist without the whole; filled diamond (◆) in UML
-- **"has-a" vs "is-a"**: use composition/aggregation for "has-a" (a Car has an Engine); use inheritance for "is-a" (a Dog is an Animal)
-- **Lifecycle dependency**: the key distinction between aggregation and composition — in composition, destroying the whole destroys the parts
+- **Aggregation** *(AQA core)*: a "has-a" (weak) relationship; the whole contains parts that **can exist independently**; represented by an **open (white) diamond** (◇) on the whole side in UML
+- **Composition** *(AQA core)*: a "has-a" (strong) relationship; the whole **creates** the parts; parts **cannot exist without the whole**; represented by a **filled (black) diamond** (◆) on the whole side in UML
+- **Association**: a general "uses-a" or "knows-about" relationship; objects reference each other but are fully independent; useful modelling vocabulary, not a separate AQA headline term
+- **Lifecycle dependency**: the key distinction between aggregation and composition — in **composition**, destroying the whole destroys the parts; in **aggregation**, the parts survive independently
+- **"Has-a" vs "is-a"**: use aggregation or composition for "has-a" (a `Car` has an `Engine`); use inheritance for "is-a" (a `Dog` is an `Animal`)
 - **UML multiplicity**: `1`, `*`, `1..*`, `0..1` notation indicates how many objects participate in a relationship
-- **Favour composition over inheritance**: a commonly cited design principle — prefer "has-a" when there is no genuine "is-a" relationship, as it leads to more flexible designs
+- **Favour composition over inheritance**: prefer "has-a" when there is no genuine "is-a" relationship, as it leads to more flexible, loosely coupled designs
 
 ## Common Mistakes to Avoid
-1. **Using inheritance when composition is better** — if you are adding "is-a" merely for code reuse rather than a genuine type relationship, composition avoids tight coupling.
-2. **Confusing aggregation with composition** — the key question is: *can the part exist without the whole?* If yes → aggregation. If no → composition.
-3. **Not modelling dependent lifecycles correctly in composition** — in composition, parts should be created *inside* the whole's methods, not passed in from outside.
-4. **Making all associations bidirectional** — only add a back-reference when the design genuinely requires it; unnecessary bidirectional links add complexity and maintenance burden.
-5. **Forgetting to clean up associations** — when an object is removed from an association, update both sides; e.g. when a student drops a course, remove the student from the course's list too.
+1. **Confusing aggregation with composition** — the key question is: *can the part exist without the whole?* If yes → aggregation (◇). If no → composition (◆).
+2. **Getting the diamond symbol wrong in UML** — remember: open/white diamond (◇) = aggregation (parts survive); filled/black diamond (◆) = composition (parts do not survive). The diamond always goes on the *whole* side.
+3. **Using inheritance when composition is better** — if you are using "is-a" merely for code reuse rather than a genuine type relationship, composition avoids tight coupling.
+4. **Not modelling dependent lifecycles correctly in composition** — in composition, parts should be created *inside* the whole's methods, not passed in from outside.
+5. **Forgetting to clean up associations** — when an object is removed from a bidirectional link, update both sides; e.g. when a student drops a course, remove the student from the course's list too.
 
 ## Extension Challenge
 Design a **school management system** that uses all three relationship types:
