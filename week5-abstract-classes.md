@@ -7,7 +7,8 @@
 - Understand why you cannot instantiate an abstract class directly
 - Write concrete subclasses that implement all abstract methods
 - Understand Python's "interface by convention" approach
-- Use `@staticmethod` and `@classmethod` and explain the difference between instance, class, and static methods
+- Define and use static methods with `@staticmethod`
+- Explain how static methods differ from instance and class methods
 - Explain the benefits of abstract classes for AQA exam questions
 - *(Extension)* Understand `__subclasshook__` and virtual subclasses
 
@@ -571,6 +572,123 @@ checkout(stripe, 199.99)
 checkout(paypal, 49.99)
 ```
 
+## 6. Static Methods
+
+### What is a Static Method?
+A **static method** is a method that belongs to the class itself rather than to any particular instance.  
+It does **not** receive `self` (no access to instance data) and does **not** receive `cls` (no access to class-level data).  
+You mark it with the `@staticmethod` decorator.
+
+Think of a static method as a **utility function** that is logically related to the class but does not need to read or change any object's state.
+
+```python
+class MathHelper:
+    @staticmethod
+    def add(a, b):
+        """A utility that belongs here conceptually but needs no instance."""
+        return a + b
+
+    @staticmethod
+    def is_positive(n):
+        return n > 0
+
+# Call directly on the class — no object needed
+print(MathHelper.add(3, 7))        # 10
+print(MathHelper.is_positive(-2))  # False
+
+# Can also be called on an instance (but this is unusual)
+helper = MathHelper()
+print(helper.add(10, 5))           # 15
+```
+
+### How Static Methods Differ from Instance and Class Methods
+
+| Feature | Instance method | Class method | Static method |
+|---|---|---|---|
+| First parameter | `self` (the instance) | `cls` (the class) | — (none automatic) |
+| Access to instance data? | ✅ Yes | ❌ No | ❌ No |
+| Access to class data? | ✅ Yes (via `self.__class__`) | ✅ Yes | ❌ No |
+| Decorator | _(none)_ | `@classmethod` | `@staticmethod` |
+| Typical use | Operate on object state | Alternative constructors, class-wide operations | Pure utility/helper functions |
+
+```python
+class Temperature:
+    unit = "Celsius"  # class variable
+
+    def __init__(self, degrees):
+        self.degrees = degrees          # instance variable
+
+    def describe(self):
+        # Instance method — uses self
+        return f"{self.degrees}° {Temperature.unit}"
+
+    @classmethod
+    def set_unit(cls, unit):
+        # Class method — modifies the class variable
+        cls.unit = unit
+
+    @staticmethod
+    def celsius_to_fahrenheit(c):
+        # Static method — pure calculation, needs no instance or class state
+        return c * 9 / 5 + 32
+
+# Static method: call on the class directly
+print(Temperature.celsius_to_fahrenheit(100))  # 212.0
+
+# Instance method: needs an object
+t = Temperature(25)
+print(t.describe())   # 25° Celsius
+
+# Class method: affects all instances
+Temperature.set_unit("Kelvin")
+print(t.describe())   # 25° Kelvin
+```
+
+### Static Methods Inside Abstract Classes
+Static methods can appear in abstract base classes. Subclasses inherit them and can use them as helper utilities without needing to override them.
+
+```python
+from abc import ABC, abstractmethod
+import math
+
+class Shape(ABC):
+    @abstractmethod
+    def area(self):
+        pass
+
+    @abstractmethod
+    def perimeter(self):
+        pass
+
+    @staticmethod
+    def is_valid_side(length):
+        """Utility: check that a side length makes sense. No instance needed."""
+        return isinstance(length, (int, float)) and length > 0
+
+
+class Circle(Shape):
+    def __init__(self, radius):
+        if not Shape.is_valid_side(radius):
+            raise ValueError("Radius must be a positive number.")
+        self.radius = radius
+
+    def area(self):
+        return math.pi * self.radius ** 2
+
+    def perimeter(self):
+        return 2 * math.pi * self.radius
+
+
+# Static method works without creating any object
+print(Shape.is_valid_side(5))    # True
+print(Shape.is_valid_side(-3))   # False
+
+c = Circle(7)
+print(f"Area: {c.area():.2f}")  # Area: 153.94
+```
+
+> **AQA exam tip:** In an AQA exam you may be asked to identify or write a static method. Remember: a static method uses the `@staticmethod` decorator, takes no `self` or `cls` parameter, and is called on the class (e.g. `ClassName.method_name()`). It is suitable for utility calculations that do not depend on any particular object's data.
+
 ## Practice Exercises
 
 ### Exercise 1: Abstract `Shape` with Concrete Subclasses
@@ -679,9 +797,8 @@ class Canvas:
 - **`@abstractmethod`**: a decorator marking a method that subclasses *must* implement; the class becomes abstract if it contains any
 - **Concrete class**: a class that implements all abstract methods and *can* be instantiated
 - **Interface (by convention)**: an abstract class with only abstract methods, no instance data — serves as a pure specification
-- **`@staticmethod`**: a method that belongs to the class but receives neither `self` nor `cls`; used for utility/helper logic that is logically related to the class
-- **`@classmethod`**: a method that receives the class (`cls`) as its first argument; used for alternative constructors and factory methods
-- **`__subclasshook__`**: (extension) a class method on an ABC that enables virtual subclass registration based on duck typing; not required for AQA
+- **`__subclasshook__`**: a class method on an ABC that enables virtual subclass registration based on duck typing
+- **Static method (`@staticmethod`)**: a method that belongs to the class but receives neither `self` nor `cls`; used for utility functions that do not depend on instance or class state; called as `ClassName.method()` — AQA students must be able to recognise and write static methods
 - **Why abstract classes matter for AQA**: they enforce consistent interfaces across an inheritance hierarchy, making polymorphism reliable and safe
 
 ## Common Mistakes to Avoid

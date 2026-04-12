@@ -161,6 +161,39 @@ def total_area(shapes):
 print(f"Total area: {total_area(shapes):.2f}")  # Total area: 108.54
 ```
 
+### Virtual Methods
+
+A **virtual method** is a method defined in a parent (base) class that is *intended to be overridden* by a subclass. When the method is called on an object, Python runs the most-derived version automatically — this is exactly the mechanism behind run-time polymorphism.
+
+> **AQA Exam Term**: The AQA specification uses the term "virtual method". In an exam question you may be asked to explain what a virtual method is, or to identify one in code.
+
+In Python, *every* instance method is effectively virtual by default — there is no extra keyword needed. Languages such as Java and C++ require methods to be explicitly declared `virtual` or annotated; Python simply always dispatches to the most-derived class. For the AQA exam you must understand what the term means, even though Python does not use the word itself.
+
+```python
+class Animal:
+    def speak(self):          # virtual method — defined in the parent to be overridden
+        return "..."
+
+class Dog(Animal):
+    def speak(self):          # overrides the virtual method
+        return "Woof!"
+
+class Cat(Animal):
+    def speak(self):          # overrides the virtual method
+        return "Meow!"
+
+
+# Python selects the correct version at run-time based on the actual object type
+animals = [Animal(), Dog(), Cat()]
+for a in animals:
+    print(a.speak())
+# ...
+# Woof!
+# Meow!
+```
+
+In the `Shape` example above, `area()` and `perimeter()` are virtual methods: they are defined in `Shape` with placeholder return values and are intended to be overridden by every subclass. Calling `shape.area()` on any item in the list automatically runs the correct subclass version.
+
 ## 3. Duck Typing
 
 > **Enrichment — Beyond Core AQA:** The concept below is the mechanism Python uses to achieve polymorphism without a strict inheritance hierarchy. AQA examiners expect you to understand polymorphism through method overriding (Section 2). The term **duck typing** and its use without inheritance are useful background knowledge that deepen your understanding, but will not be tested as a named concept in the exam.
@@ -480,7 +513,7 @@ class NumberList:
 
 ## Key Concepts to Remember
 - **Polymorphism**: the ability for the same method call to produce different behaviour depending on the object's type
-- **Virtual method**: an overridable method defined in a parent class; at run-time Python dispatches to the most-derived version — this is called dynamic dispatch or late binding; in Python all instance methods are virtual by default
+- **Virtual method**: a method defined in a parent class that is intended to be overridden by subclasses; in Python all instance methods are effectively virtual by default
 - **Method overriding**: a subclass replaces a parent method with its own version; Python calls the most derived version at runtime
 - **Duck typing**: Python's informal polymorphism — an object is usable wherever its methods match what is expected, regardless of its actual type; "if it walks like a duck…" (enrichment; not a named AQA term)
 - **Operator overloading**: implementing dunder methods (`__add__`, `__eq__`, etc.) lets your objects work with built-in Python operators
