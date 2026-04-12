@@ -222,7 +222,9 @@ for person in [emp, mgr, rep]:
 # Carol: bonus = £4,250.00
 ```
 
-> **AQA Note**: The AQA specification calls an overrideable parent method a *virtual method* — see Week 4 for a full explanation of the term, including a Python example.
+> **AQA exam language**: Questions may ask you to *"explain what is meant by overriding a method"* or *"write a subclass that overrides the `calculate_bonus()` method."* The correct definition is: **overriding** means a subclass provides its own implementation of a method with the same name as one in the parent class; when the method is called on an object of the subclass, Python runs the subclass version instead of the parent version.
+
+> **AQA Note**: The AQA specification also calls an overrideable parent method a *virtual method* — see Week 4 for a full explanation of the term, including a Python example.
 
 ## 4. `isinstance()` and `issubclass()`
 
