@@ -1,12 +1,25 @@
-# Week 7: OOP Data Structures – Linked Lists, Stacks, and Queues
+# Week 7: Applying OOP to Data Structures – Linked Lists, Stacks, and Queues
+
+> **Teacher Note**
+> This week sits at the boundary between the OOP strand of this course and the broader A-Level Computer Science data structures topic. Linked lists, stacks, and queues are required knowledge for A-Level CS, but they are **not** OOP concepts — they are abstract data types studied across the whole specification. The purpose of this week is to show students how OOP techniques (classes, encapsulation, dunder methods) provide an excellent way to *model and implement* these data structures. Treat the data structures themselves as familiar CS context; the teaching focus is on **how OOP design is applied** to build them cleanly. Extension sections (labelled clearly below) go beyond AQA requirements and are suitable for students who want deeper practice.
+
+## Overview
+
+Data structures such as linked lists, stacks, and queues are a core part of A-Level Computer Science. This week we use them as a **practical context for applying OOP**, demonstrating that the class-based techniques covered in earlier weeks are not just abstract theory — they are the natural way to design well-structured, reusable data structures.
+
+As you work through this material, notice how each data structure benefits from:
+
+- **Encapsulation** — internal implementation details (the head pointer, the backing list) are kept private; users interact only through a clean interface.
+- **Abstraction** — the class presents only the operations that matter (push, pop, enqueue, dequeue) and hides how they work.
+- **Dunder methods** — `__len__`, `__contains__`, `__str__`, and `__iter__` make custom classes feel like built-in Python types.
 
 ## Learning Objectives
-- Implement a `Node` class as the fundamental building block
-- Build a `LinkedList` class with full traversal, search, insert, and delete operations
-- Implement a `Stack` class (LIFO) with push, pop, and peek
-- Implement a `Queue` class (FIFO) with enqueue, dequeue, and peek
-- Understand when to use each data structure
-- Appreciate how encapsulation applies to data structure design
+- Use a `Node` class as the fundamental building block for linked data structures
+- Build a `LinkedList` class with traversal, search, insert, and delete — practising encapsulation throughout
+- Implement a `Stack` class (LIFO) using OOP design: push, pop, and peek via a clean interface
+- Implement a `Queue` class (FIFO) using OOP design: enqueue, dequeue, and peek via a clean interface
+- Recognise how encapsulation and abstraction apply naturally to data structure design
+- Understand when to use each data structure in a program
 - *(Extension)* Implement a Stack backed by a linked list for O(1) operations
 - *(Extension)* Implement a circular (fixed-size) queue using index wrap-around
 
@@ -14,6 +27,8 @@
 
 ### Building Blocks
 A **node** is the fundamental unit of linked data structures. Each node holds a piece of data and one or more **pointers** (references) to the next node(s).
+
+> **OOP connection:** `Node` is a minimal class — it bundles together related data (`data` and `next`) and provides a clean string representation. Defining it as a class (rather than using a tuple or dictionary) means we can give it behaviour and refer to it by type.
 
 ```
 Visualising a singly linked list:
@@ -63,6 +78,9 @@ print("None")
 ## 2. Linked List
 
 ### The `LinkedList` Class
+
+> **OOP connection:** `LinkedList` wraps a chain of `Node` objects behind a private `__head` pointer. All mutation happens through methods (`append`, `delete`, etc.), which is encapsulation in practice. The dunder methods (`__len__`, `__contains__`, `__iter__`, `__str__`) give the class a Pythonic interface identical to built-in collections.
+
 ```python
 class LinkedList:
     """A singly linked list with full CRUD operations."""
@@ -229,6 +247,8 @@ print()             # 40 30 20 10 5
 ### What is a Stack?
 A **stack** is a **Last-In, First-Out (LIFO)** data structure. Think of a pile of plates: you add to the top and take from the top.
 
+> **OOP connection:** The `Stack` class hides its internal list (`__items`) entirely. Users only ever call `push`, `pop`, `peek`, and `is_empty` — they have no access to the underlying storage. This is a textbook example of abstraction: the interface is simple and stable regardless of how the internals are implemented.
+
 ```
 Operations:
   push(item)  — add to the top
@@ -335,6 +355,8 @@ for expr, expected in tests:
 
 ### What is a Queue?
 A **queue** is a **First-In, First-Out (FIFO)** data structure. Think of a queue at a shop: the first person in line is the first to be served.
+
+> **OOP connection:** The `Queue` and `PrintQueue` classes demonstrate **composition** — `PrintQueue` owns a `Queue` object internally. `PrintJob` is a small class used purely to group related data (document, pages, owner), which is cleaner than passing three separate arguments everywhere. This is OOP design in a realistic setting.
 
 ```
 Operations:
@@ -447,7 +469,7 @@ printer.print_next()  # Printing: "Letter.docx" (2pp) for Bob
 print(printer)        # Office Printer: 1 job(s) pending
 ```
 
-## 5. Stack Implemented Using a Linked List
+## 5. *(Extension)* Stack Implemented Using a Linked List
 
 > **Extension — Beyond Core AQA:** Implementing a Stack *using a linked list internally* is **not required by the AQA specification**. AQA exams expect you to understand the Stack's LIFO interface (push, pop, peek) and to be able to implement a Stack — the internal representation (list vs linked list) is an implementation detail that goes beyond the exam. This section is included for students interested in the performance analysis (all operations become O(1)) and to see how data structures compose.
 
@@ -619,7 +641,7 @@ class CircularQueue:
 4. **Forgetting to update `__size`** — if you maintain a size counter, every insert and delete must update it; an incorrect size breaks `__len__` and any range checks.
 5. **Off-by-one errors in `insert_at()`** — the valid index range for insertion is `0` to `size` (inclusive); for deletion it is `0` to `size - 1`.
 
-## Extension Challenge
+## *(Extension)* Extension Challenge: Doubly-Linked Deque
 Implement a **double-ended queue (deque)** class — a data structure where items can be added or removed from *either* end:
 - `add_front(item)` and `add_rear(item)`
 - `remove_front()` and `remove_rear()`
