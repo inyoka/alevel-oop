@@ -8,6 +8,19 @@
 - Use Python's `@property` decorator for clean, Pythonic encapsulation
 - Implement data validation inside setters to enforce constraints
 
+## Key Terminology
+
+- **Encapsulation**: bundling an object's data and methods together while restricting direct access to internal data from outside the class.
+- **Access modifier**: a convention (or language rule) that controls visibility of attributes and methods. Python uses naming conventions rather than enforced keywords.
+- **Public** (`name`): accessible from anywhere — no restriction.
+- **Protected** (`_name`): convention signals "internal use only" — accessible but should be treated with care.
+- **Private** (`__name`): name-mangled to `_ClassName__name` — genuinely harder to access from outside the class.
+- **Name mangling**: Python's transformation of `__attr` into `_ClassName__attr`, preventing accidental external access.
+- **Getter / Accessor**: a method (or property) that retrieves the value of a private attribute.
+- **Setter / Mutator**: a method (or property) that validates and updates the value of a private attribute.
+- **`@property`**: Python decorator that lets getter and setter methods be accessed with attribute-like syntax.
+- **Data validation**: checks inside setters that ensure an object's attributes remain in a valid state.
+
 ## 1. What is Encapsulation?
 
 ### The Core Idea
@@ -54,6 +67,10 @@ print(account.get_balance())  # 1500 — safe
 - **Clarity**: the public interface (methods) makes clear what operations are allowed
 - **Security**: sensitive data (passwords, balances) is hidden from direct access
 
+> **Exam focus:** AQA questions often ask you to *"explain what is meant by encapsulation"* or *"give one benefit of encapsulation."* The key idea is **restricting direct access to internal data** so that only controlled operations are permitted. Useful benefits to quote: **data integrity** (invalid values are prevented), **flexibility** (internal implementation can change without breaking external code), and **security** (sensitive data is hidden).
+
+> **Teacher note:** The vending machine analogy works well in class. Draw the parallel: the buttons (methods) are the public interface, the mechanism inside (attributes) is private. This helps students move from the abstract definition to a concrete mental model.
+
 ## 2. Access Modifiers in Python
 
 ### Public, Protected, and Private
@@ -98,7 +115,9 @@ s = Secret()
 print(s._Secret__pin)         # 1234 — name-mangled form (avoid using this!)
 ```
 
-> For AQA A-Level: use `__` for genuinely private data you want to protect. Use `_` to indicate "internal" but still somewhat accessible data.
+> **Exam focus:** AQA questions may ask you to *"use appropriate access modifiers to protect an attribute"* or *"explain the difference between public and private attributes."* In Python: **public** has no underscore prefix; **private** uses a double underscore (`__`). State that Python uses **naming conventions** rather than enforced keywords. For AQA exam code: use `__` for private attributes you want to protect; use getters and setters (or `@property`) to provide controlled access.
+
+> **Teacher note:** Use `__` (double underscore) for genuinely private data you want to protect via name mangling. Use `_` (single underscore) to signal "internal use" — accessible but should be treated carefully by other developers.
 
 ## 3. Getters and Setters
 
@@ -145,6 +164,8 @@ try:
 except ValueError as e:
     print(e)            # Age must be an integer between 5 and 25.
 ```
+
+> **Teacher note:** AQA exam questions are equally likely to use the traditional `get_x()` / `set_x()` style or the `@property` style. Students should be comfortable reading and writing both. The `@property` approach is more Pythonic and is the style used in most Python resources, but some AQA mark schemes explicitly expect `get_`/`set_` method names — always read the question carefully.
 
 ## 4. The `@property` Decorator
 
@@ -313,7 +334,7 @@ p.stock = 45
 print(p.stock)          # 45
 ```
 
-## Practice Exercises
+## Practice Tasks
 
 ### Exercise 1: BankAccount with Private Balance
 Create a `BankAccount` class where `balance` is a private attribute (`__balance`). Use `@property` for a read-only `balance` property. Implement `deposit(amount)` and `withdraw(amount)` methods with full validation (positive amounts, sufficient funds). Add a transaction history list that records every deposit and withdrawal.
@@ -393,6 +414,8 @@ class Product:
 - **`@property`**: Python decorator that lets you define getters, setters, and deleters with clean attribute-like syntax
 - **Data validation**: checks inside setters ensure the object always remains in a valid state
 
+> **Exam focus:** AQA exam questions commonly include: *"Rewrite the class so that `balance` is a private attribute with appropriate getter and setter methods."* Use `__balance` for the private attribute, `get_balance()` or `@property def balance` for the getter, and a setter method with validation. Always include the validation logic — examiners look for it.
+
 ## Common Mistakes to Avoid
 1. **Accessing private attributes directly from outside the class** — `obj.__private` raises `AttributeError`; always use the provided getter/property instead.
 2. **Forgetting to call setters inside `__init__`** — if you assign `self.__x = value` directly in `__init__` instead of using `self.x = value` (the setter), your validation is bypassed on construction.
@@ -400,7 +423,7 @@ class Product:
 4. **Making computed properties into setters** — derived values like `area` or `fahrenheit` should usually be read-only properties; providing a setter for them is usually a design error.
 5. **Over-engineering** — not every attribute needs a property with validation; use plain attributes for data that genuinely has no constraints.
 
-## Extension Challenge
+## Extension
 Design a `Person` class with full encapsulation. Private attributes: `__first_name`, `__last_name`, `__dob` (date of birth as a string `"YYYY-MM-DD"`), `__email`, and `__phone`. Use `@property` with setters for all attributes. Validate:
 - Names are non-empty strings containing only letters and hyphens
 - DOB is a valid date string in `"YYYY-MM-DD"` format and represents a date in the past

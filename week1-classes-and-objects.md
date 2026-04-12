@@ -9,6 +9,19 @@
 - Implement `__str__` and `__repr__` for readable object output
 - Create multiple objects from the same class
 
+## Key Terminology
+
+- **Class**: A blueprint or template that defines the structure and behaviour of objects.
+- **Object / Instance**: A specific entity created from a class using `ClassName(args)`.
+- **`__init__`**: The constructor method — called automatically when a new object is created.
+- **`self`**: A reference to the current object; must be the first parameter of every instance method.
+- **Instance attribute**: A variable belonging to one specific object, assigned via `self.x = ...` inside `__init__`.
+- **Class attribute**: A variable shared by all instances of a class, defined directly inside the class body but outside `__init__`.
+- **Method**: A function defined inside a class that operates on objects of that class.
+- **Instantiation**: The act of creating an object from a class.
+- **`__str__`**: Special method defining the human-readable string representation of an object (used by `print()`).
+- **`__repr__`**: Special method defining the developer/debugging representation of an object (used by `repr()` and the REPL).
+
 ## 1. What is Object-Oriented Programming?
 
 ### The Core Idea
@@ -22,6 +35,8 @@ A **class** is the blueprint or template. An **object** (also called an **instan
 # Every house has the same structure (rooms, doors) but its own values
 # (colour, address, owner).
 ```
+
+> **Teacher note:** The "What is OOP?" section provides supporting context. The core AQA content starts in Section 2 (defining a class). If time is limited, the analogy paragraph can be assigned as pre-reading.
 
 ### Why OOP Matters for AQA A-Level
 The AQA specification (7517) requires you to:
@@ -148,7 +163,9 @@ print(Student.student_count)     # 2
 print(s1.student_count)          # 2 — same value via instance
 ```
 
-> **Key distinction**: modifying an instance attribute with `self.x = ...` only affects that one object. Modifying a class attribute should be done via the class name (`ClassName.attr = ...`) to avoid accidentally shadowing it with an instance attribute.
+> **Teacher note:** Modifying an instance attribute with `self.x = ...` only affects that one object. Modifying a class attribute should be done via the class name (`ClassName.attr = ...`) to avoid accidentally shadowing it with an instance attribute.
+
+> **Exam focus:** AQA questions may ask you to *"explain the difference between a class attribute and an instance attribute"* or *"state what is meant by instantiation."* Key phrases: a **class attribute** is shared across all instances; an **instance attribute** is unique to each object; **instantiation** is the process of creating an object from a class.
 
 ## 4. `__str__` and `__repr__`
 
@@ -262,7 +279,7 @@ print(repr(acc2))                    # BankAccount(owner='Bob', ...)
 print(BankAccount.bank_name)         # Python Bank
 ```
 
-## Practice Exercises
+## Practice Tasks
 
 ### Exercise 1: BankAccount Class
 Create a `BankAccount` class with the attributes `owner`, `account_number`, and `balance`. Add methods `deposit(amount)`, `withdraw(amount)`, and `get_balance()`. Include `__str__` to display account information clearly.
@@ -338,6 +355,8 @@ class Fraction:
 - **`__repr__`**: defines the developer/debugging representation (used by `repr()` and the REPL)
 - **Instantiation**: the act of creating an object from a class using `ClassName(args)`
 
+> **Exam focus:** Common AQA questions on this topic: *"Write a class definition that includes a constructor, attributes, and at least one method."* Remember to include `self` as the first parameter of every method, use `self.attribute_name` for instance attributes, and define the constructor as `__init__`.
+
 ## Common Mistakes to Avoid
 1. **Forgetting `self` as the first parameter** — every instance method must have `self` as its first argument, even if it looks unused; Python passes the object automatically.
 2. **Calling methods without parentheses** — `obj.method` gives you the method object; `obj.method()` actually calls it.
@@ -345,7 +364,8 @@ class Fraction:
 4. **Not initialising attributes in `__init__`** — attributes should almost always be created in `__init__` so every instance is in a known state from the start.
 5. **Using a mutable class attribute (like a list)** — all instances share the same list, leading to unexpected shared state. Mutable defaults should be instance attributes created inside `__init__`.
 
-## Extension Challenge
+## Extension
+
 Design a `Library` and `Book` system. A `Book` should have `title`, `author`, `isbn`, and `available` (bool) attributes. A `Library` should hold a list of `Book` objects and support:
 - `add_book(book)` — adds a Book to the collection
 - `checkout(isbn)` — marks a book as unavailable
