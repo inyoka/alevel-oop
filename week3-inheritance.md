@@ -221,6 +221,8 @@ for person in [emp, mgr, rep]:
 # Carol: bonus = £4,250.00
 ```
 
+> **AQA Note**: The AQA specification calls an overrideable parent method a *virtual method* — see Week 4 for a full explanation of the term, including a Python example.
+
 ## 4. `isinstance()` and `issubclass()`
 
 ### Inspecting the Type Hierarchy at Runtime
