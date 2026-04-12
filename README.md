@@ -6,6 +6,19 @@ Comprehensive week-by-week Object-Oriented Programming course for Year 13 AQA A-
 
 This guide covers all OOP content required for AQA A-Level Computer Science, aligned to the *Fundamentals of Programming* section of the specification. It follows the same rhythm and format as the [GCSE Python guide](https://github.com/nuast-dev/gcse-python).
 
+### 🗂️ At-a-Glance Summary
+
+| Week | Topic | Key AQA Concepts |
+|------|-------|-----------------|
+| 1 | [Classes and Objects](/week1-classes-and-objects.md) | class, object, constructor (`__init__`), instance attributes, class attributes |
+| 2 | [Encapsulation](/week2-encapsulation.md) | public / protected / private, getters & setters, `@property`, data validation |
+| 3 | [Inheritance](/week3-inheritance.md) | base & derived classes, `super()`, method overriding, MRO, `isinstance` |
+| 4 | [Polymorphism](/week4-polymorphism.md) | virtual methods, dynamic dispatch, method overriding, operator overloading |
+| 5 | [Abstract Classes](/week5-abstract-classes.md) | abstraction, `@abstractmethod`, static methods (`@staticmethod`), abstract methods |
+| 6 | [Object Associations](/week6-associations.md) | aggregation, composition, "has-a" vs "is-a", UML class diagrams |
+| 7 | [OOP Data Structures](/week7-oop-data-structures.md) | linked list, stack, queue, `Node` class |
+| 8 | [Consolidation](/week8-consolidation.md) | four OOP pillars, OOP design principles, UML, AQA exam patterns |
+
 ### 📚 Weekly Topics
 
 #### [Week 1: Classes and Objects](/week1-classes-and-objects.md)
@@ -45,6 +58,7 @@ Building on existing classes
 
 One interface, many forms
 
+- **Virtual methods** and dynamic dispatch (AQA terminology)
 - Method overriding as run-time polymorphism
 - Duck typing in Python
 - Operator overloading (`__add__`, `__eq__`, `__lt__`, `__len__`, etc.)
@@ -57,8 +71,10 @@ Enforcing a common interface
 
 - What abstraction means in OOP
 - The `abc` module: `ABC` and `@abstractmethod`
+- **Abstract methods** — enforcing a contract that subclasses must fulfil
 - Why you cannot instantiate an abstract class
 - Concrete subclasses that implement abstract methods
+- **Static methods** (`@staticmethod`) — utility methods that belong to the class, not to any instance
 - Python's interface-by-convention approach
 - Using abstract classes to enforce contracts
 
@@ -67,8 +83,8 @@ Enforcing a common interface
 Modelling relationships between classes
 
 - Association ("uses-a")
-- Aggregation ("has-a", independent lifecycle)
-- Composition ("has-a", dependent lifecycle)
+- **Aggregation** ("has-a", independent lifecycle) — open diamond `◇` in UML
+- **Composition** ("has-a", dependent lifecycle) — filled diamond `◆` in UML
 - ASCII / UML class diagram notation
 - "has-a" vs "is-a": choosing relationships over inheritance
 - Real-world design examples
@@ -89,6 +105,7 @@ Exam-ready OOP design
 
 - Reviewing all four OOP pillars (encapsulation, inheritance, polymorphism, abstraction)
 - Reading and writing UML class diagrams for AQA exams
+- Object-oriented design principles (encapsulate what varies; favour composition over inheritance; program to interfaces)
 - SOLID principles overview
 - Common AQA exam question patterns for OOP
 - Full worked example: designing a larger OOP system from scratch
@@ -102,10 +119,13 @@ By the end of this course, students will be able to:
 - ✓ Design and implement classes with appropriate attributes and methods
 - ✓ Apply encapsulation to protect data and enforce validation
 - ✓ Use inheritance and method overriding to reuse and extend code
+- ✓ Explain and apply virtual methods and dynamic dispatch (polymorphism)
 - ✓ Exploit polymorphism to write flexible, maintainable programs
-- ✓ Define and implement abstract classes as contracts
-- ✓ Model object relationships using association, aggregation, and composition
+- ✓ Define and implement abstract classes and abstract methods as contracts
+- ✓ Write and use static methods (`@staticmethod`) as class-level utilities
+- ✓ Model object relationships using aggregation and composition
 - ✓ Implement linked lists, stacks, and queues as OOP classes
+- ✓ Apply object-oriented design principles to larger systems
 - ✓ Tackle AQA OOP exam questions with confidence
 
 ## 📝 Course Structure
@@ -148,9 +168,12 @@ This course aligns with AQA A-Level Computer Science 7517, *Fundamentals of Prog
 - Classes, objects, instantiation
 - Encapsulation and information hiding
 - Inheritance and method overriding
-- Polymorphism
-- Abstract classes
-- Object relationships and UML diagrams
+- **Virtual methods** and dynamic dispatch (polymorphism)
+- Polymorphism (run-time, via method overriding)
+- **Abstract classes** and abstract methods
+- **Static methods** (`@staticmethod`)
+- Object relationships: **aggregation** and **composition** (and UML notation)
+- Object-oriented design principles
 
 ## 📚 Additional Resources
 
