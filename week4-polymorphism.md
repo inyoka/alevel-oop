@@ -2,6 +2,7 @@
 
 ## Learning Objectives
 - Understand what polymorphism means and the two main types
+- Understand what a virtual method is and how dynamic dispatch works (AQA terminology)
 - Implement run-time polymorphism through method overriding
 - Overload operators using Python's dunder (magic) methods
 - Implement comparison operators to make objects sortable and comparable
@@ -49,6 +50,35 @@ for animal in animals:
 > **AQA Note**: Python is dynamically typed, so polymorphism is almost always run-time. The concept of "compile-time polymorphism" (different methods with the same name but different signatures) exists in Java/C++ but not natively in Python — instead Python uses default arguments and `*args`.
 
 ## 2. Run-Time Polymorphism: Method Overriding
+
+### Virtual Methods — AQA Terminology
+In OOP theory (and in AQA exam questions), an overridable method is called a **virtual method**. When you call a virtual method through a reference to the base class, Python automatically calls the most-derived version — this is called **dynamic dispatch** or **late binding**.
+
+> **AQA exam language**: Questions may ask you to *"explain what is meant by a virtual method"* or *"describe how virtual methods support polymorphism."* The correct answer is: a virtual method is a method defined in a parent class that can be overridden in a subclass; when it is called at run-time, Python dispatches to the overriding version in the most-derived class.
+
+In Python, **all instance methods are virtual by default** — every method can be overridden in a subclass. (In C++ or Java you must explicitly mark a method `virtual` or `override`; in Python no extra keyword is needed.) This is why Python code naturally supports run-time polymorphism through plain method overriding.
+
+```python
+class Animal:
+    def speak(self):            # virtual — can be overridden
+        return "(silence)"
+
+class Dog(Animal):
+    def speak(self):            # overrides the virtual method
+        return "Woof!"
+
+class Cat(Animal):
+    def speak(self):            # overrides the virtual method
+        return "Meow!"
+
+# Dynamic dispatch: the correct override is selected at run-time
+def make_animal_speak(animal):  # works with ANY Animal subclass
+    print(animal.speak())
+
+make_animal_speak(Dog())   # Woof!
+make_animal_speak(Cat())   # Meow!
+make_animal_speak(Animal()) # (silence)  ← base class version
+```
 
 ### Polymorphism in a Class Hierarchy
 ```python
@@ -450,6 +480,7 @@ class NumberList:
 
 ## Key Concepts to Remember
 - **Polymorphism**: the ability for the same method call to produce different behaviour depending on the object's type
+- **Virtual method**: an overridable method defined in a parent class; at run-time Python dispatches to the most-derived version — this is called dynamic dispatch or late binding; in Python all instance methods are virtual by default
 - **Method overriding**: a subclass replaces a parent method with its own version; Python calls the most derived version at runtime
 - **Duck typing**: Python's informal polymorphism — an object is usable wherever its methods match what is expected, regardless of its actual type; "if it walks like a duck…" (enrichment; not a named AQA term)
 - **Operator overloading**: implementing dunder methods (`__add__`, `__eq__`, etc.) lets your objects work with built-in Python operators

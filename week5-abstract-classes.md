@@ -7,6 +7,7 @@
 - Understand why you cannot instantiate an abstract class directly
 - Write concrete subclasses that implement all abstract methods
 - Understand Python's "interface by convention" approach
+- Use `@staticmethod` and `@classmethod` and explain the difference between instance, class, and static methods
 - Explain the benefits of abstract classes for AQA exam questions
 - *(Extension)* Understand `__subclasshook__` and virtual subclasses
 
@@ -365,7 +366,127 @@ class Robot:
 print(isinstance(Robot(), Speakable))  # True — duck typing meets ABCs
 ```
 
-## 5. Benefits of Abstract Classes for AQA
+## 5. Static Methods and Class Methods
+
+### `@staticmethod` — Behaviour That Belongs to the Class, Not an Instance
+A **static method** is a method defined inside a class that does **not** receive the instance (`self`) or the class (`cls`) as its first argument. It is a plain function that belongs to the class's namespace because it is logically related to the class.
+
+> **AQA note**: AQA questions may ask you to explain the difference between instance methods, class methods, and static methods, or to write a class that includes a static method.
+
+```python
+class MathUtils:
+    """A collection of utility functions — no instance needed."""
+
+    @staticmethod
+    def add(a, b):
+        return a + b
+
+    @staticmethod
+    def multiply(a, b):
+        return a * b
+
+    @staticmethod
+    def is_even(n):
+        return n % 2 == 0
+
+
+# Call without creating an instance
+print(MathUtils.add(3, 4))       # 7
+print(MathUtils.is_even(10))     # True
+
+# Can also call on an instance (but that is unusual — class-level call is clearer)
+utils = MathUtils()
+print(utils.multiply(5, 6))      # 30
+```
+
+### `@classmethod` — Methods That Receive the Class Itself
+A **class method** receives the class (`cls`) as its first argument instead of the instance. It can access and modify class-level attributes and is often used as an alternative constructor.
+
+```python
+class Temperature:
+    """Represents a temperature, stored in Celsius internally."""
+
+    ABSOLUTE_ZERO_C = -273.15
+
+    def __init__(self, celsius):
+        if celsius < Temperature.ABSOLUTE_ZERO_C:
+            raise ValueError("Temperature below absolute zero.")
+        self.__celsius = celsius
+
+    @classmethod
+    def from_fahrenheit(cls, fahrenheit):
+        """Alternative constructor: create from a Fahrenheit value."""
+        return cls((fahrenheit - 32) * 5 / 9)
+
+    @classmethod
+    def from_kelvin(cls, kelvin):
+        """Alternative constructor: create from a Kelvin value."""
+        return cls(kelvin + Temperature.ABSOLUTE_ZERO_C)
+
+    @staticmethod
+    def celsius_to_fahrenheit(c):
+        """Utility conversion — no instance needed."""
+        return c * 9 / 5 + 32
+
+    @property
+    def celsius(self):
+        return self.__celsius
+
+    @property
+    def fahrenheit(self):
+        return self.__celsius * 9 / 5 + 32
+
+    def __str__(self):
+        return f"{self.__celsius:.2f}°C / {self.fahrenheit:.2f}°F"
+
+
+boiling = Temperature(100)
+body_temp = Temperature.from_fahrenheit(98.6)
+abs_zero = Temperature.from_kelvin(0)
+
+print(boiling)                          # 100.00°C / 212.00°F
+print(body_temp)                        # 37.00°C / 98.60°F
+print(abs_zero)                         # -273.15°C / -459.67°F
+print(Temperature.celsius_to_fahrenheit(0))  # 32.0
+```
+
+### When to Use Each
+| Type | Decorator | First argument | Has access to | Typical use |
+|---|---|---|---|---|
+| Instance method | *(none)* | `self` | instance attributes + class attributes | Behaviour specific to one object |
+| Class method | `@classmethod` | `cls` | class attributes only | Alternative constructors; factory methods |
+| Static method | `@staticmethod` | *(none)* | neither instance nor class | Utility/helper functions logically related to the class |
+
+```python
+class Dog:
+    species = "Canis lupus familiaris"   # class attribute
+
+    def __init__(self, name, breed):
+        self.name = name                 # instance attribute
+        self.breed = breed
+
+    def bark(self):                      # instance method — uses self
+        return f"{self.name} says: Woof!"
+
+    @classmethod
+    def get_species(cls):               # class method — uses cls
+        return f"All dogs are: {cls.species}"
+
+    @staticmethod
+    def is_valid_breed(breed):          # static method — no self or cls
+        known_breeds = {"Labrador", "Poodle", "Beagle", "Bulldog", "Collie"}
+        return breed in known_breeds
+
+
+fido = Dog("Fido", "Labrador")
+
+print(fido.bark())                 # Fido says: Woof!
+print(Dog.get_species())           # All dogs are: Canis lupus familiaris
+print(Dog.is_valid_breed("Poodle"))  # True
+print(Dog.is_valid_breed("Dragon"))  # False
+```
+
+## 6. Benefits of Abstract Classes for AQA
 
 ### Summary of Benefits
 ```python
@@ -558,6 +679,8 @@ class Canvas:
 - **`@abstractmethod`**: a decorator marking a method that subclasses *must* implement; the class becomes abstract if it contains any
 - **Concrete class**: a class that implements all abstract methods and *can* be instantiated
 - **Interface (by convention)**: an abstract class with only abstract methods, no instance data — serves as a pure specification
+- **`@staticmethod`**: a method that belongs to the class but receives neither `self` nor `cls`; used for utility/helper logic that is logically related to the class
+- **`@classmethod`**: a method that receives the class (`cls`) as its first argument; used for alternative constructors and factory methods
 - **`__subclasshook__`**: (extension) a class method on an ABC that enables virtual subclass registration based on duck typing; not required for AQA
 - **Why abstract classes matter for AQA**: they enforce consistent interfaces across an inheritance hierarchy, making polymorphism reliable and safe
 

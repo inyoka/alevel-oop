@@ -7,6 +7,7 @@
 - Apply the "has-a" test to distinguish relationships from "is-a" (inheritance)
 - Know when to choose composition over inheritance
 - Model dependent and independent object lifecycles
+- Identify aggregation and composition as the primary AQA-assessed relationship types; recognise association as supporting design vocabulary
 
 ## 1. The Three Object Relationships
 
@@ -25,6 +26,13 @@ Simple memory aid:
   AGGREGATION  — one object contains others, but the parts can exist alone
   COMPOSITION  — one object owns others; the parts CANNOT exist without the whole
 ```
+
+> **AQA exam focus:** **Aggregation** and **composition** are the two relationship types most likely to be examined in AQA questions. You must be able to:
+> - Explain the difference between aggregation and composition (lifecycle dependency)
+> - Implement each in Python and identify the correct UML symbol (◇ vs ◆)
+> - Apply the "has-a" test to choose between them
+>
+> **Association** is useful supporting vocabulary for modelling and discussing system designs, but AQA questions are primarily centred on aggregation and composition. Understand association as the background concept from which aggregation and composition are distinguished.
 
 ## 2. Association
 
