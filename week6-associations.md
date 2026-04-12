@@ -31,7 +31,7 @@ Quick memory aid:
 ### "Has-A" vs "Is-A"
 A fundamental modelling question is whether two classes share a **"has-a"** or **"is-a"** relationship:
 
-- **"Is-a"** → use **inheritance**. A `Dog` *is a* `Animal`. `Dog` inherits from `Animal`.
+- **"Is-a"** → use **inheritance**. A `Dog` *is an* `Animal`. `Dog` inherits from `Animal`.
 - **"Has-a"** → use **aggregation or composition**. A `Car` *has a* `Engine`. `Car` contains an `Engine` object.
 
 If you find yourself writing "is-a" but it feels forced (e.g. just to reuse methods), switch to "has-a" (composition). This is the principle of **favouring composition over inheritance**.
