@@ -2,11 +2,13 @@
 
 ## Learning Objectives
 - Understand what polymorphism means and the two main types
+- Understand what a virtual method is and how dynamic dispatch works (AQA terminology)
 - Implement run-time polymorphism through method overriding
-- Use duck typing to write flexible, polymorphic code
 - Overload operators using Python's dunder (magic) methods
 - Implement comparison operators to make objects sortable and comparable
 - Implement `__len__`, `__contains__`, and other sequence-style dunder methods
+- *(Enrichment)* Understand duck typing as Python's informal approach to polymorphism
+- *(Extension)* Use `@total_ordering` to auto-generate comparison methods
 
 ## 1. What is Polymorphism?
 
@@ -48,6 +50,35 @@ for animal in animals:
 > **AQA Note**: Python is dynamically typed, so polymorphism is almost always run-time. The concept of "compile-time polymorphism" (different methods with the same name but different signatures) exists in Java/C++ but not natively in Python — instead Python uses default arguments and `*args`.
 
 ## 2. Run-Time Polymorphism: Method Overriding
+
+### Virtual Methods — AQA Terminology
+In OOP theory (and in AQA exam questions), an overridable method is called a **virtual method**. When you call a virtual method through a reference to the base class, Python automatically calls the most-derived version — this is called **dynamic dispatch** or **late binding**.
+
+> **AQA exam language**: Questions may ask you to *"explain what is meant by a virtual method"* or *"describe how virtual methods support polymorphism."* The correct answer is: a virtual method is a method defined in a parent class that can be overridden in a subclass; when it is called at run-time, Python dispatches to the overriding version in the most-derived class.
+
+In Python, **all instance methods are virtual by default** — every method can be overridden in a subclass. (In C++ or Java you must explicitly mark a method `virtual` or `override`; in Python no extra keyword is needed.) This is why Python code naturally supports run-time polymorphism through plain method overriding.
+
+```python
+class Animal:
+    def speak(self):            # virtual — can be overridden
+        return "(silence)"
+
+class Dog(Animal):
+    def speak(self):            # overrides the virtual method
+        return "Woof!"
+
+class Cat(Animal):
+    def speak(self):            # overrides the virtual method
+        return "Meow!"
+
+# Dynamic dispatch: the correct override is selected at run-time
+def make_animal_speak(animal):  # works with ANY Animal subclass
+    print(animal.speak())
+
+make_animal_speak(Dog())   # Woof!
+make_animal_speak(Cat())   # Meow!
+make_animal_speak(Animal()) # (silence)  ← base class version
+```
 
 ### Polymorphism in a Class Hierarchy
 ```python
@@ -164,6 +195,8 @@ for a in animals:
 In the `Shape` example above, `area()` and `perimeter()` are virtual methods: they are defined in `Shape` with placeholder return values and are intended to be overridden by every subclass. Calling `shape.area()` on any item in the list automatically runs the correct subclass version.
 
 ## 3. Duck Typing
+
+> **Enrichment — Beyond Core AQA:** The concept below is the mechanism Python uses to achieve polymorphism without a strict inheritance hierarchy. AQA examiners expect you to understand polymorphism through method overriding (Section 2). The term **duck typing** and its use without inheritance are useful background knowledge that deepen your understanding, but will not be tested as a named concept in the exam.
 
 ### "If It Walks Like a Duck..."
 Duck typing is Python's approach to polymorphism: Python does not care about the *type* of an object — only whether the object has the method or attribute you need. If it has `.speak()`, you can call `.speak()` on it.
@@ -287,6 +320,9 @@ print(v1.dot(v2))       # 2*1 + 3*(-1) = -1
 ```
 
 ### Comparison Operators — Playing Cards
+
+> **Extension:** The `@total_ordering` decorator is a useful Python standard-library shortcut, but it is **not required by the AQA specification**. You are expected to know that you can implement comparison operators via dunder methods; `@total_ordering` is a Python-specific convenience on top of that.
+
 ```python
 from functools import total_ordering
 
@@ -479,10 +515,10 @@ class NumberList:
 - **Polymorphism**: the ability for the same method call to produce different behaviour depending on the object's type
 - **Virtual method**: a method defined in a parent class that is intended to be overridden by subclasses; in Python all instance methods are effectively virtual by default
 - **Method overriding**: a subclass replaces a parent method with its own version; Python calls the most derived version at runtime
-- **Duck typing**: Python cares whether an object *has* the needed method, not what its type is — "if it walks like a duck…"
+- **Duck typing**: Python's informal polymorphism — an object is usable wherever its methods match what is expected, regardless of its actual type; "if it walks like a duck…" (enrichment; not a named AQA term)
 - **Operator overloading**: implementing dunder methods (`__add__`, `__eq__`, etc.) lets your objects work with built-in Python operators
 - **Dunder methods**: special methods surrounded by double underscores (e.g. `__str__`, `__len__`) that Python calls in specific circumstances
-- **`@total_ordering`**: a `functools` decorator that auto-generates missing comparison methods from `__eq__` and one of `__lt__`/`__le__`/`__gt__`/`__ge__`
+- **`@total_ordering`**: a `functools` decorator (extension) that auto-generates missing comparison methods from `__eq__` and one of `__lt__`/`__le__`/`__gt__`/`__ge__`
 - **`__len__`**: called by `len()`; must return a non-negative integer
 - **`__contains__`**: called by the `in` operator; should return a bool
 

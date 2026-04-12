@@ -7,6 +7,8 @@
 - Implement a `Queue` class (FIFO) with enqueue, dequeue, and peek
 - Understand when to use each data structure
 - Appreciate how encapsulation applies to data structure design
+- *(Extension)* Implement a Stack backed by a linked list for O(1) operations
+- *(Extension)* Implement a circular (fixed-size) queue using index wrap-around
 
 ## 1. The Node Class
 
@@ -447,6 +449,8 @@ print(printer)        # Office Printer: 1 job(s) pending
 
 ## 5. Stack Implemented Using a Linked List
 
+> **Extension — Beyond Core AQA:** Implementing a Stack *using a linked list internally* is **not required by the AQA specification**. AQA exams expect you to understand the Stack's LIFO interface (push, pop, peek) and to be able to implement a Stack — the internal representation (list vs linked list) is an implementation detail that goes beyond the exam. This section is included for students interested in the performance analysis (all operations become O(1)) and to see how data structures compose.
+
 ### Avoiding the List Internally
 ```python
 class StackNode:
@@ -510,10 +514,12 @@ print(len(ls))    # 2
 
 ### Exercise 1: Extend LinkedList with `insert_at()`
 The `LinkedList` class above already has `insert_at()`. Extend it further with:
-- `delete_at(index)` — remove the node at a given index
-- `find_middle()` — return the middle element (use the two-pointer technique: one pointer moves one step at a time, one moves two)
-- `has_cycle()` — detect if the list contains a circular reference (Floyd's algorithm)
-- `count(data)` — count how many times `data` appears
+- `delete_at(index)` — remove the node at a given index *(core AQA skill)*
+- `count(data)` — count how many times `data` appears *(core AQA skill)*
+
+> **Extension:** The following two methods go beyond AQA requirements and introduce classical algorithm techniques:
+> - `find_middle()` — return the middle element using the **two-pointer technique** (one pointer advances one step, the other two steps)
+> - `has_cycle()` — detect a circular reference using **Floyd's cycle-detection algorithm**
 
 ```python
 # Your code here
@@ -573,6 +579,9 @@ class LinkedStack:
 ```
 
 ### Exercise 5: Circular Queue
+
+> **Extension — Beyond Core AQA:** A circular queue using wrap-around index arithmetic is **not required by the AQA specification**. This exercise develops deeper understanding of memory-efficient fixed-size buffers and is suitable for students targeting the highest grades or planning to study Computer Science further.
+
 Implement a `CircularQueue` using a fixed-size array (list of `None` values). A circular queue uses `front` and `rear` pointers that wrap around when they reach the end of the array:
 - `enqueue(item)` — add to rear; raise error if full
 - `dequeue()` — remove from front; raise error if empty
@@ -600,7 +609,7 @@ class CircularQueue:
 - **Queue (FIFO)**: First-In, First-Out; enqueue adds to back, dequeue removes from front; used for scheduling, print queues, BFS
 - **`peek()`**: inspect the top/front item without removing it — present in both Stack and Queue
 - **`is_empty()`**: always check before pop/dequeue to avoid errors
-- **Linked implementation vs list implementation**: a linked list gives O(1) push/pop for a stack; Python's built-in list gives O(1) append/pop-from-end (suitable for a stack) but O(n) pop-from-front (use `collections.deque` for O(1) queue operations in production)
+- **Linked implementation vs list implementation**: (extension) a linked list gives O(1) push/pop for a stack; Python's built-in list gives O(1) append/pop-from-end (suitable for a stack) but O(n) pop-from-front (use `collections.deque` for O(1) queue operations in production)
 - **Encapsulation in data structures**: `__head`, `__items`, `__top` etc. are private; users interact only via the defined methods
 
 ## Common Mistakes to Avoid

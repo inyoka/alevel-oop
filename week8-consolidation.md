@@ -2,6 +2,7 @@
 
 ## Learning Objectives
 - Review all four OOP pillars: encapsulation, inheritance, polymorphism, and abstraction
+- Apply the three core AQA design principles: encapsulate what varies, favour composition over inheritance, and program to interfaces not implementations
 - Apply class design best practices to larger systems
 - Read and interpret UML class diagrams as presented in AQA exams
 - Understand the SOLID principles at a high level
@@ -111,7 +112,93 @@ Hide complexity; expose only the essential interface.
 # They do NOT need to know how balance is stored or calculated internally.
 ```
 
-## 2. Class Design Best Practices
+## 2. AQA-Aligned Class Design Principles
+
+These three design principles appear widely in A-Level OOP resources and underpin good class design. They complement the four pillars and can help you structure answers to "explain the design choices" questions.
+
+### Encapsulate What Varies
+Identify the parts of your design that are likely to change and separate them from the parts that stay stable. Put variation behind a method or attribute so the rest of the code is insulated from change.
+
+```python
+# BAD: the discount calculation is buried inside the order — hard to change
+class Order:
+    def total(self, subtotal):
+        return subtotal * 0.9   # hardcoded 10% discount — varies!
+
+# GOOD: encapsulate what varies (the discount rule) in its own class
+class FixedDiscount:
+    def apply(self, subtotal):
+        return subtotal * 0.9
+
+class SeasonalDiscount:
+    def apply(self, subtotal):
+        return subtotal * 0.8   # 20% during sale
+
+class Order:
+    def __init__(self, discount=None):
+        self.__discount = discount
+
+    def total(self, subtotal):
+        if self.__discount:
+            return self.__discount.apply(subtotal)
+        return subtotal
+```
+
+### Favour Composition Over Inheritance
+```python
+# Use composition when the relationship is "has-a", not "is-a"
+class Engine:
+    def __init__(self, horsepower):
+        self.horsepower = horsepower
+
+    def start(self):
+        return f"Engine ({self.horsepower}hp) started."
+
+
+class Car:
+    def __init__(self, make, model, horsepower):
+        self.make = make
+        self.model = model
+        self.__engine = Engine(horsepower)   # HAS-A engine
+
+    def start(self):
+        return self.__engine.start()
+
+    def __str__(self):
+        return f"{self.make} {self.model}"
+```
+
+### Program to Interfaces, Not Implementations
+Write code that depends on an abstract class (or consistent method signatures) rather than on a specific concrete class. This means your calling code remains unchanged when you swap one implementation for another.
+
+```python
+from abc import ABC, abstractmethod
+
+class Notifier(ABC):
+    """Abstract interface — calling code depends on this, not on Email/SMS."""
+
+    @abstractmethod
+    def send(self, message):
+        pass
+
+
+class EmailNotifier(Notifier):
+    def send(self, message):
+        print(f"[Email] {message}")
+
+class SMSNotifier(Notifier):
+    def send(self, message):
+        print(f"[SMS] {message}")
+
+
+def alert_user(notifier: Notifier, message: str):
+    """Works with ANY Notifier — depends on the interface, not the implementation."""
+    notifier.send(message)
+
+# Swap implementations without touching alert_user
+alert_user(EmailNotifier(), "Your order has shipped.")
+alert_user(SMSNotifier(),   "Your order has shipped.")
+```
 
 ### Single Responsibility
 Each class should have **one reason to change**. A class that handles both business logic and file I/O is doing too much.
@@ -142,30 +229,6 @@ class ReportWriter:
     def save(filename, content):
         with open(filename, "w") as f:
             f.write(content)
-```
-
-### Favour Composition Over Inheritance
-```python
-# Use composition when the relationship is "has-a", not "is-a"
-class Engine:
-    def __init__(self, horsepower):
-        self.horsepower = horsepower
-
-    def start(self):
-        return f"Engine ({self.horsepower}hp) started."
-
-
-class Car:
-    def __init__(self, make, model, horsepower):
-        self.make = make
-        self.model = model
-        self.__engine = Engine(horsepower)   # HAS-A engine
-
-    def start(self):
-        return self.__engine.start()
-
-    def __str__(self):
-        return f"{self.make} {self.model}"
 ```
 
 ## 3. Reading UML Class Diagrams for AQA
@@ -260,9 +323,11 @@ class Cat(Animal):
         return f"{self._name} purrs contentedly."
 ```
 
-## 4. SOLID Principles — Brief Overview
+## 4. SOLID Principles — Brief Overview (Extension)
 
-The **SOLID** principles are guidelines for writing maintainable OOP code. You will not be tested on them by name in AQA, but they underpin good design.
+> **Extension — Beyond Core AQA:** The SOLID principles are **not named or tested in the AQA specification**. You will not be asked to name, define, or apply them in an AQA exam. They are included here as enrichment because they underpin good professional OOP design and complement the concepts you have studied. Read this section to broaden your understanding; do not prioritise it over the examinable content in Sections 1–3 and 5.
+
+The **SOLID** principles are guidelines for writing maintainable OOP code.
 
 | Letter | Principle | One-line summary |
 |---|---|---|
@@ -925,7 +990,7 @@ Use these definitions word-for-word (or close to them) in AQA exam answers.
 ## Key Concepts to Remember
 - **Encapsulation**: use `__private` attributes with `@property`/setters; validate in setters; bundle data with behaviour
 - **Inheritance**: use `class Child(Parent):`; call `super().__init__(...)` in the child constructor; override methods when the child needs different behaviour
-- **Polymorphism**: write code that calls methods by name on objects; Python dispatches to the correct version at runtime; duck typing means any object with the right methods works
+- **Polymorphism**: write code that calls methods by name on objects; Python dispatches to the correct version at runtime; virtual methods make this work through dynamic dispatch; duck typing — the principle that any object with the right method works regardless of type — is an enrichment concept, not a named AQA term
 - **Abstraction**: use `ABC` and `@abstractmethod` to define contracts; concrete subclasses must implement all abstract methods; cannot instantiate abstract classes directly
 - **Encapsulate what varies**: identify the parts of a class most likely to change; make them private; expose only a stable public interface — the rest of the system is unaffected when the internal detail changes
 - **Favour composition over inheritance**: when the relationship is "has-a", compose objects rather than inherit; the whole creates or holds its parts; contained objects can be swapped at runtime, giving greater flexibility than inheritance
